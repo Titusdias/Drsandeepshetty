@@ -22,10 +22,14 @@ export function SiteFooter() {
             Invisalign-certified team, modern technology, and a calm,
             patient-first experience.
           </p>
-          <div className="mt-5 space-y-2 text-sm">
+          <div className="mt-5 space-y-3 text-sm">
             <p className="flex items-start gap-2">
               <MapPin className="mt-0.5 size-4 shrink-0 text-[#5ec4c4]" />
               {CLINIC.addressLine}
+            </p>
+            <p className="flex items-start gap-2">
+              <MapPin className="mt-0.5 size-4 shrink-0 text-[#5ec4c4]" />
+              {CLINIC.addressLine2}
             </p>
             <p className="flex items-center gap-2 font-semibold text-white">
               <Phone className="size-4 text-[#5ec4c4]" />

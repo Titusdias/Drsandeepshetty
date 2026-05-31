@@ -106,7 +106,7 @@ function AnimatedStat({ value, label }: { value: number; label: string }) {
       </p>
     </motion.div>
     <AnimatedStat value={115} label="Patient reviews" />
-    <AnimatedStat value={15} label="Years of experience" />
+    <AnimatedStat value={25} label="Years of experience" />
   </div>
 </div>
 
@@ -229,7 +229,7 @@ export default function Home() {
               </p>
             </motion.div>
             <AnimatedStat value={115} label="Patient reviews" />
-            <AnimatedStat value={15} label="Years of experience" />
+            <AnimatedStat value={25} label="Years of experience" />
           </div>
         </div>
       </section>
@@ -280,7 +280,7 @@ export default function Home() {
             </div>
             <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white p-2 shadow-lg">
               <Image
-                src={LAB_IMG}
+                src="/dr/download (3).jpg"
                 alt="Dental technology and sterile instruments"
                 width={900}
                 height={700}

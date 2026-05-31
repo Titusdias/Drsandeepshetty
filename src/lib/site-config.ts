@@ -10,9 +10,11 @@ export const CLINIC = {
   reviewCount: 115,
   phoneDisplay: "0824 411 3388",
   phoneTel: "tel:+918244113388",
-  whatsapp: "https://wa.me/918244113388",
+  whatsapp: "https://wa.me/+917411133575",
   addressLine:
     "Marian Paradise Plaza, 1st floor, Shop No. 106, Bunts Hostel Rd, near PSR Silk Sarees, Mangaluru, Karnataka 575003",
+  addressLine2:
+    "1st Floor of the Gateway Complex in Pandeshwar, Mangaluru, Karnataka 575001",
   mapSearchQuery:
     "Dr+Sandeep+Shetty+Dental+Clinic+Marian+Paradise+Plaza+Mangaluru",
   /** Google Maps search (directions / listing). Replace with Place URL when available. */
@@ -45,6 +47,6 @@ export const SERVICE_LIST = [
 ];
 
 export const SOCIAL = {
-  instagram: "https://instagram.com/",
+  instagram: "https://www.instagram.com/drsandeepshettys",
   facebook: "https://facebook.com/",
 };

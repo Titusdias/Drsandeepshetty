@@ -51,19 +51,28 @@ export default function ContactPage() {
                   <h2 className="text-xl font-bold text-slate-900">
                     Clinic information
                   </h2>
-                  <div className="flex gap-3">
-                    <MapPin className="mt-0.5 size-5 shrink-0 text-[#2D8A8A]" />
-                    <div>
-                      <p className="font-semibold text-slate-900">Address</p>
-                      <p className="mt-1 text-slate-600">{CLINIC.addressLine}</p>
-                      <a
-                        href={CLINIC.googleMapsUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-2 inline-block text-sm font-semibold text-[#2D8A8A] hover:underline"
-                      >
-                        Open in Google Maps
-                      </a>
+                  <div className="flex flex-col gap-5">
+                    <div className="flex gap-3">
+                      <MapPin className="mt-0.5 size-5 shrink-0 text-[#2D8A8A]" />
+                      <div>
+                        <p className="font-semibold text-slate-900">Clinic 1</p>
+                        <p className="mt-1 text-slate-600">{CLINIC.addressLine}</p>
+                        <a
+                          href={CLINIC.googleMapsUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-2 inline-block text-sm font-semibold text-[#2D8A8A] hover:underline"
+                        >
+                          Open in Google Maps
+                        </a>
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <MapPin className="mt-0.5 size-5 shrink-0 text-[#2D8A8A]" />
+                      <div>
+                        <p className="font-semibold text-slate-900">Clinic 2</p>
+                        <p className="mt-1 text-slate-600">{CLINIC.addressLine2}</p>
+                      </div>
                     </div>
                   </div>
                   <div className="border-t border-slate-100 pt-5">
