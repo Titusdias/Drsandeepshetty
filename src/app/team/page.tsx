@@ -18,27 +18,21 @@ const team = [
     role: "Lead clinician · orthodontics & multi-specialty dentistry",
     bio: "Driving clinical protocols, Invisalign-certified treatment planning, and a patient-calming chairside culture.",
     image:
-      "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=900&q=80",
+      "/WhatsApp Image 2026-06-03 at 19.03.10.jpeg",
+    slug: "dr-sandeep-shetty",
   },
   {
-    name: "Hygiene & assistant team",
-    role: "Sterilization · chairside assistants",
-    bio: "Dedicated to painless visits, immaculate operatories, and smooth coordination across procedures.",
+    name: "Dr. Anjali Shetty",
+    role: "Clinician",
+    bio: "Dedicated to comprehensive patient care, ensuring comfortable visits and exceptional treatment outcomes.",
     image:
-      "https://images.unsplash.com/photo-1588776814546-d9d6e6d4c5bf?auto=format&fit=crop&w=900&q=80",
-  },
-  {
-    name: "Front-office coordinators",
-    role: "Scheduling · insurance coordination",
-    bio: "Helping families book thoughtfully, minimise wait times, and stay informed via phone or WhatsApp.",
-    image:
-      "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=900&q=80",
+      "/Screenshot 2026-06-03 213443.png",
   },
 ];
 
 export default function TeamPage() {
   return (
-    <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
+    <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20">
       <SectionReveal className="max-w-3xl">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#2D8A8A]">
           Our team
@@ -52,46 +46,59 @@ export default function TeamPage() {
         </p>
       </SectionReveal>
 
-      <div className="mt-14 grid gap-8 lg:grid-cols-3">
+      <div className="mx-auto mt-14 grid max-w-4xl gap-8 lg:grid-cols-2">
         {team.map((member, i) => (
-          <SectionReveal key={member.name} delay={i * 0.06}>
-            <Card className="h-full overflow-hidden border-slate-200/90 shadow-lg">
+          <SectionReveal key={member.name} delay={i * 0.06} className="flex">
+            <Card className="flex flex-col w-full overflow-hidden border-slate-200/90 shadow-lg">
               <div className="relative aspect-[4/3] w-full bg-slate-100">
                 <Image
                   src={member.image}
                   alt={member.name}
                   fill
-                  className="object-cover"
+                  className="object-cover object-top"
                   sizes="(max-width: 1024px) 100vw, 33vw"
                 />
               </div>
-              <CardContent className="space-y-2 p-6">
-                <h2 className="text-lg font-bold text-slate-900">{member.name}</h2>
-                <p className="text-xs font-semibold uppercase tracking-wide text-[#2D8A8A]">
-                  {member.role}
-                </p>
-                <p className="text-sm leading-relaxed text-slate-600">
+              <CardContent className="flex flex-col flex-grow space-y-4 p-6">
+                <div>
+                  <h2 className="text-lg font-bold text-slate-900">{member.name}</h2>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-[#2D8A8A]">
+                    {member.role}
+                  </p>
+                </div>
+                <p className="text-sm leading-relaxed text-slate-600 flex-grow">
                   {member.bio}
                 </p>
+                {member.slug && (
+                  <Button asChild variant="outline" className="w-full mt-4 text-[#2D8A8A] hover:text-[#236b6b] hover:bg-[#2D8A8A]/10 border-[#2D8A8A]/20">
+                    <Link href={`/team/${member.slug}`}>Know More</Link>
+                  </Button>
+                )}
               </CardContent>
             </Card>
           </SectionReveal>
         ))}
       </div>
 
-      <SectionReveal
-        delay={0.15}
-        className="mt-16 rounded-3xl bg-[#0f172a] px-8 py-10 text-center text-white shadow-xl"
-      >
-        <p className="text-lg font-semibold">Careers & collaborations</p>
-        <p className="mt-2 text-sm text-slate-300">
-          Looking to join a growing Mangaluru practice? Reach out with your CV on
-          WhatsApp—we&apos;d love to meet aligned clinicians.
-        </p>
-        <Button asChild className="mt-6 rounded-xl bg-white text-slate-900 hover:bg-slate-100">
-          <Link href="/contact">Contact the clinic</Link>
-        </Button>
+      <SectionReveal delay={0.2} className="mx-auto mt-20 max-w-4xl text-center">
+        <div className="rounded-2xl bg-slate-50 px-6 py-12 shadow-sm border border-slate-100 sm:px-12 sm:py-16">
+          <h2 className="text-3xl font-bold tracking-tight text-slate-900">
+            Join Our Team
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-600">
+            We are always looking for passionate and dedicated professionals to join our growing clinic. If you are interested in career opportunities, we would love to hear from you.
+          </p>
+          <div className="mt-8 flex justify-center gap-4">
+            <Button asChild size="lg" className="bg-[#2D8A8A] hover:bg-[#236b6b]">
+              <Link href="/contact">Contact Us</Link>
+            </Button>
+            <Button asChild variant="outline" size="lg">
+              <Link href="tel:+918244113388">Call Us</Link>
+            </Button>
+          </div>
+        </div>
       </SectionReveal>
+
     </div>
   );
 }

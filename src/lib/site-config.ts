@@ -10,6 +10,8 @@ export const CLINIC = {
   reviewCount: 115,
   phoneDisplay: "0824 411 3388",
   phoneTel: "tel:+918244113388",
+  phoneDisplay2: "07411 133575",
+  phoneTel2: "tel:+917411133575",
   whatsapp: "https://wa.me/+917411133575",
   addressLine:
     "Marian Paradise Plaza, 1st floor, Shop No. 106, Bunts Hostel Rd, near PSR Silk Sarees, Mangaluru, Karnataka 575003",
@@ -39,11 +41,11 @@ export const SERVICE_LIST = [
   "Fillings and sealants",
   "Laser dentistry",
   "Mouth guards",
-  "Online dentist booking",
   "Oral surgery",
-  "Paediatrics",
   "Root canals",
-  "Orthodontics & Invisalign®",
+  "Invisalign®",
+  "Any other"
+  ,
 ];
 
 export const SOCIAL = {

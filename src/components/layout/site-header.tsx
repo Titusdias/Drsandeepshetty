@@ -25,21 +25,6 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 shadow-sm backdrop-blur-md">
-      <div className="hidden border-b border-slate-100 bg-[#FDFBF7] sm:block">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-2 text-xs text-slate-600 sm:px-6">
-          <p>
-            <span className="font-semibold text-slate-800">{CLINIC.city}</span>
-            · {CLINIC.hoursSummary}
-          </p>
-          <a
-            href={CLINIC.phoneTel}
-            className="font-semibold text-[#2D8A8A] transition hover:underline"
-          >
-            Call {CLINIC.phoneDisplay}
-          </a>
-        </div>
-      </div>
-
       <nav className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-3 py-3 sm:px-6">
         <Link href="/" className="flex min-w-0 items-center gap-2.5">
           <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-[#2D8A8A] text-white shadow-sm">
@@ -113,13 +98,6 @@ export function SiteHeader() {
                   {label}
                 </Link>
               ))}
-              <Link
-                href="/services"
-                onClick={() => setOpen(false)}
-                className="block rounded-xl px-3 py-3 text-sm font-semibold text-slate-800 hover:bg-teal-50 hover:text-[#2D8A8A]"
-              >
-                All services
-              </Link>
               <div className="grid gap-2 pt-2 sm:grid-cols-2">
                 <Button asChild variant="outline" className="w-full">
                   <a href={CLINIC.whatsapp} target="_blank" rel="noopener noreferrer">

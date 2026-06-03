@@ -34,11 +34,11 @@ async function sendBookingEmail(payload: {
   message: string;
 }) {
   const transporter = getMailTransporter();
-  const to = process.env.EMAIL_TO;
+  const to = process.env.EMAIL_TO ?? "sandeepshettyortho@yahoo.in";
   const from = process.env.EMAIL_FROM ?? process.env.EMAIL_USER;
 
-  if (!to || !from) {
-    throw new Error("Email recipient or sender is not configured. Set EMAIL_TO and EMAIL_FROM.");
+  if (!from) {
+    throw new Error("Email sender is not configured. Set EMAIL_FROM or EMAIL_USER.");
   }
 
   const text = `New appointment request from the website:
@@ -58,6 +58,7 @@ Received: ${new Date().toLocaleString()}`;
     to,
     subject: `Appointment request from ${payload.name}`,
     text,
+    replyTo: payload.email || undefined,
   });
 }
 

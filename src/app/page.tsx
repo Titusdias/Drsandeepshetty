@@ -18,6 +18,7 @@ import { SectionReveal } from "@/components/motion/section-reveal";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CLINIC, SERVICE_LIST } from "@/lib/site-config";
+import { useClinicSettings, useTestimonials, useHeroSections } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
 const herobhai =
   "https://images.unsplash.com/photo-1629909615184-74f495363b67?auto=format&fit=crop&w=1920&q=80";
@@ -62,6 +63,7 @@ const reviews: ReviewItem[] = [
       "Invisalign coaching from start to finish—they made the journey simple.",
   },
 ];
+
 function AnimatedStat({ value, label }: { value: number; label: string }) {
   const ref = useRef<HTMLSpanElement>(null);
   const motionVal = useMotionValue(0);
@@ -88,29 +90,22 @@ function AnimatedStat({ value, label }: { value: number; label: string }) {
     </div>
   );
 }
-<div className="relative z-10 border-t border-white/10 bg-black/30 backdrop-blur">
-  <div className="mx-auto grid max-w-6xl gap-10 px-4 py-10 sm:px-6 md:grid-cols-3 md:gap-8">
-    <motion.div
-      className="text-center sm:text-left"
-      initial={{ opacity: 0, y: 12 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-    >
-      <p className="font-mono text-4xl font-bold text-white sm:text-5xl">
-        {CLINIC.rating}
-        <span className="align-top text-2xl text-amber-400">★</span>
-      </p>
-      <p className="mt-1 text-sm font-medium text-white/70">
-        Average Google rating
-      </p>
-    </motion.div>
-    <AnimatedStat value={115} label="Patient reviews" />
-    <AnimatedStat value={25} label="Years of experience" />
-  </div>
-</div>
 
 export default function Home() {
+  const { data: settings } = useClinicSettings();
+  const { data: testimonials } = useTestimonials();
+
+  // Fallback to hardcoded data if Firestore data isn't loaded yet
+  const displaySettings = settings || CLINIC;
+  const displayTestimonials: ReviewItem[] = (testimonials || [])
+    .filter(t => t.featured)
+    .slice(0, 6)
+    .map(t => ({
+      name: t.name,
+      quote: t.quote,
+      featured: true,
+    }));
+
   return (
     <>
       {/* Full-width background image */}
@@ -134,22 +129,22 @@ export default function Home() {
           <SectionReveal className="space-y-7">
             <div className="flex flex-wrap gap-2">
               <Badge className="bg-white/90 text-slate-800 normal-case tracking-normal hover:bg-white/90">
-                {CLINIC.rating}★ Google · {CLINIC.reviewCount} reviews
+                {displaySettings.rating}★ Google · {displaySettings.reviewCount} reviews
               </Badge>
               <Badge className="border border-white/60 bg-transparent text-white normal-case tracking-normal">
                 Certified Invisalign focus
               </Badge>
             </div>
             <h1 className="text-[2rem] font-bold leading-[1.12] tracking-tight text-white sm:text-5xl lg:text-[3.15rem]">
-              Exceptional dental care in {CLINIC.city}.
+              Exceptional dental care in {displaySettings.city}.
             </h1>
             <p className="text-xl font-semibold text-teal-300 sm:text-2xl">
-              {CLINIC.tagline}
+              {displaySettings.tagline}
             </p>
             <p className="max-w-xl text-base leading-relaxed text-white/85 sm:text-lg">
               A modern, minimally stressful clinic experience—clear guidance,
               advanced techniques, and meticulous hygiene for every age at{" "}
-              {CLINIC.name}.
+              {displaySettings.name}.
             </p>
             <div className="grid gap-2.5 sm:flex sm:flex-wrap sm:gap-3">
               <Button
@@ -165,13 +160,13 @@ export default function Home() {
                 className="w-full rounded-full border-white/70 bg-white/10 px-10 text-white backdrop-blur hover:bg-white/20 sm:w-auto"
                 asChild
               >
-                <a href={CLINIC.phoneTel}>
+                <a href={displaySettings.phoneTel}>
                   <Phone className="size-4" />
-                  Call {CLINIC.phoneDisplay}
+                  Call {displaySettings.phoneDisplay}
                 </a>
               </Button>
             </div>
-            <p className="text-xs text-white/60">{CLINIC.hoursSummary}</p>
+            <p className="text-xs text-white/60">{displaySettings.hoursSummary}</p>
           </SectionReveal>
 
           {/* Floating image card — right side */}
@@ -221,14 +216,14 @@ export default function Home() {
               transition={{ duration: 0.5 }}
             >
               <p className="font-mono text-4xl font-bold text-white sm:text-5xl">
-                {CLINIC.rating}
+                {displaySettings.rating}
                 <span className="align-top text-2xl text-amber-400">★</span>
               </p>
               <p className="mt-1 text-sm font-medium text-white/70">
                 Average Google rating
               </p>
             </motion.div>
-            <AnimatedStat value={115} label="Patient reviews" />
+            <AnimatedStat value={displaySettings.reviewCount} label="Patient reviews" />
             <AnimatedStat value={25} label="Years of experience" />
           </div>
         </div>
@@ -291,7 +286,7 @@ export default function Home() {
             <div className="flex flex-col justify-center rounded-3xl border border-teal-200 bg-teal-50/60 p-6 shadow-inner">
               <Star className="size-10 text-[#2D8A8A]" />
               <p className="mt-4 text-lg font-bold text-slate-900">
-                {CLINIC.rating}/5 cumulative trust from {CLINIC.reviewCount}+
+                {displaySettings.rating}/5 cumulative trust from {displaySettings.reviewCount}+
                 verified Google reviews—updated as patients speak.
               </p>
             </div>
@@ -357,7 +352,7 @@ export default function Home() {
             id="reviews"
             className="relative mt-16 rounded-[2rem] bg-white px-4 py-12 shadow-xl sm:px-8 lg:px-12"
           >
-            <ReviewsWall reviews={reviews} />
+            <ReviewsWall reviews={displayTestimonials.length > 0 ? displayTestimonials : []} />
           </div>
         </div>
       </section>
@@ -384,16 +379,16 @@ export default function Home() {
                 Flagship clinic
               </p>
               <h3 className="mt-2 text-xl font-bold text-slate-950">
-                {CLINIC.city}
+                {displaySettings.city}
               </h3>
               <p className="mt-3 flex gap-2 text-slate-600">
                 <MapPin className="mt-1 size-4 shrink-0 text-[#2D8A8A]" />
-                {CLINIC.addressLine}
+                {displaySettings.addressLine}
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <Button asChild>
                   <a
-                    href={CLINIC.googleMapsUrl}
+                    href="https://maps.google.com/"
                     target="_blank"
                     rel="noreferrer"
                   >
@@ -451,7 +446,7 @@ export default function Home() {
             <h2 className="text-3xl font-bold sm:text-4xl">
               Book online, call us, or WhatsApp for same-day coordination.
             </h2>
-            <p className="text-teal-100/90">{CLINIC.hoursSummary}</p>
+            <p className="text-teal-100/90">{displaySettings.hoursSummary}</p>
           </div>
           <div className="flex flex-wrap justify-center gap-3 lg:justify-end">
             <Button
@@ -467,7 +462,7 @@ export default function Home() {
               variant="outline"
               className="rounded-full border-white text-white hover:bg-white/10"
             >
-              <a href={CLINIC.whatsapp}>WhatsApp clinic</a>
+              <a href={displaySettings.whatsapp}>WhatsApp clinic</a>
             </Button>
           </div>
         </div>

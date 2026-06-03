@@ -23,12 +23,10 @@ export default function ContactPage() {
             Contact
           </p>
           <h1 className="mt-3 text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl">
-            Book your smile visit in {CLINIC.city}
+            Book your smile visit 
           </h1>
           <p className="mt-5 text-lg text-slate-600">
-            New and returning patients are welcome. Share a few details and our
-            team will reach out to confirm timing—or call / WhatsApp for faster
-            scheduling.
+            Share a few details and our team will contact you.
           </p>
         </SectionReveal>
 
@@ -81,12 +79,20 @@ export default function ContactPage() {
                     </p>
                     <OpenStatusDynamic />
                   </div>
-                  <Button asChild className="w-full rounded-xl">
-                    <a href={CLINIC.phoneTel}>
-                      <PhoneCall className="size-4" />
-                      Call {CLINIC.phoneDisplay}
-                    </a>
-                  </Button>
+                  <div className="grid gap-3 pt-4 sm:grid-cols-2">
+                    <Button asChild className="w-full rounded-xl">
+                      <a href={CLINIC.phoneTel}>
+                        <PhoneCall className="size-4" />
+                        Call {CLINIC.phoneDisplay}
+                      </a>
+                    </Button>
+                    <Button asChild variant="outline" className="w-full rounded-xl">
+                      <a href={CLINIC.phoneTel2}>
+                        <PhoneCall className="size-4" />
+                        Call {CLINIC.phoneDisplay2}
+                      </a>
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
 

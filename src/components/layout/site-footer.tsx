@@ -17,11 +17,7 @@ export function SiteFooter() {
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-4">
         <div className="md:col-span-2">
           <p className="text-lg font-bold text-white">{CLINIC.name}</p>
-          <p className="mt-2 max-w-md text-sm leading-relaxed text-slate-300">
-            Multi-specialty dental and orthodontic centre in {CLINIC.city}.
-            Invisalign-certified team, modern technology, and a calm,
-            patient-first experience.
-          </p>
+          
           <div className="mt-5 space-y-3 text-sm">
             <p className="flex items-start gap-2">
               <MapPin className="mt-0.5 size-4 shrink-0 text-[#5ec4c4]" />
@@ -35,6 +31,21 @@ export function SiteFooter() {
               <Phone className="size-4 text-[#5ec4c4]" />
               <a href={CLINIC.phoneTel} className="transition hover:text-[#5ec4c4]">
                 {CLINIC.phoneDisplay}
+              </a>
+            </p>
+          </div>
+
+          <p className="text-lg font-bold text-white mt-8">WHITE SMILE DENTAL SPECIALITY</p>
+          
+          <div className="mt-5 space-y-3 text-sm">
+            <p className="flex items-start gap-2">
+              <MapPin className="mt-0.5 size-4 shrink-0 text-[#5ec4c4]" />
+              Ash Sharqiyah St, Muscat, Oman
+            </p>
+            <p className="flex items-center gap-2 font-semibold text-white">
+              <Phone className="size-4 text-[#5ec4c4]" />
+              <a href="tel:+96824565586" className="transition hover:text-[#5ec4c4]">
+                +968 24 565586
               </a>
             </p>
           </div>
@@ -89,12 +100,7 @@ export function SiteFooter() {
               WhatsApp
             </a>
           </div>
-          <p className="mt-6 rounded-2xl border border-red-500/30 bg-red-950/40 px-4 py-3 text-sm font-semibold text-red-200">
-            Emergency:{" "}
-            <a href={CLINIC.phoneTel} className="underline-offset-2 hover:underline">
-              {CLINIC.phoneDisplay}
-            </a>
-          </p>
+         
         </div>
       </div>
 

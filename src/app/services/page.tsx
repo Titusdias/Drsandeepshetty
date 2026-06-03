@@ -16,12 +16,12 @@ import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: `Dental Services | ${CLINIC.name}`,
-  description: `Full range of dental services in ${CLINIC.city}: implants, orthodontics, paediatrics, cosmetic care, emergencies, and more.`,
+  description: `Full range of dental services in ${CLINIC.city}: implants, orthodontics, cosmetic care, emergencies, and more.`,
 };
 
 const groups = [
   {
-    title: "Preventive & family",
+    title: "Preventive Dentistry",
     desc: "Check-ups, sealants, kids’ dentistry, and ongoing maintenance.",
     icon: HeartPulse,
     match: ["Check-ups", "Paediatrics", "Fillings and sealants"],
@@ -43,12 +43,7 @@ const groups = [
       "Root canals",
     ],
   },
-  {
-    title: "Comfort & urgency",
-    desc: "Pain relief, walk-in urgency support, sedation awareness—ask our team.",
-    icon: Scissors,
-    match: ["Emergency care", "Oral surgery", "Mouth guards"],
-  },
+  
 ];
 
 export default function ServicesPage() {
@@ -64,10 +59,8 @@ export default function ServicesPage() {
               Total dental care, tailored for you
             </h1>
             <p className="mt-5 text-lg text-slate-600">
-              Explore the treatments we routinely provide at our {CLINIC.city}{" "}
-              centre. Prefer a clinician-led roadmap? Ask for a consult and
-              we’ll prioritise comfort at every step.
-            </p>
+              Explore the treatments we routinely provide at our centre. 
+              </p>
             <Button asChild className="mt-8 rounded-xl">
               <Link href="/contact">Book a consultation</Link>
             </Button>

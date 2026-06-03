@@ -26,7 +26,7 @@ export default function AboutPage() {
               Welcome to {CLINIC.shortName}&apos;s practice
             </h1>
             <p className="mt-6 text-lg leading-relaxed text-slate-600">
-              Located on Bunts Hostel Road, we serve families across{" "}
+              Located on Bunts Hostel Road and  Gateway Complex in Pandeshwar, we serve families across{" "}
               {CLINIC.city} with a calm, tech-forward clinic experience—where
               comfort, cleanliness, and clear communication come first.
             </p>

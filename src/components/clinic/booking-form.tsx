@@ -1,18 +1,101 @@
 "use client";
 
-import { useActionState } from "react";
+import { useState } from "react";
+import emailjs from "@emailjs/browser";
 
-import { submitBooking, type BookingFormState } from "@/app/contact/actions";
 import { CLINIC, SERVICE_LIST } from "@/lib/site-config";
 import { Button } from "@/components/ui/button";
+
+type BookingFormState = {
+  ok: boolean;
+  message: string;
+};
 
 const initial: BookingFormState = { ok: false, message: "" };
 
 export function BookingForm() {
-  const [state, formAction, pending] = useActionState(submitBooking, initial);
+  const [state, setState] = useState<BookingFormState>(initial);
+  const [pending, setPending] = useState(false);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setPending(true);
+
+    const formData = new FormData(event.currentTarget);
+    const name = String(formData.get("name") ?? "").trim();
+    const phone = String(formData.get("phone") ?? "").trim();
+    const email = String(formData.get("email") ?? "").trim();
+    const preferred = String(formData.get("preferred") ?? "").trim();
+    const service = String(formData.get("service") ?? "").trim();
+    const message = String(formData.get("message") ?? "").trim();
+
+    if (!name) {
+      setState({ ok: false, message: "Please enter your name." });
+      setPending(false);
+      return;
+    }
+    if (!phone) {
+      setState({ ok: false, message: "Please enter your phone number." });
+      setPending(false);
+      return;
+    }
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setState({ ok: false, message: "Please enter a valid email address." });
+      setPending(false);
+      return;
+    }
+
+    const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+    const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+    const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
+
+    if (!serviceId || !templateId || !publicKey) {
+      console.error("EmailJS configuration is missing.");
+      setState({
+        ok: false,
+        message:
+          "Email service is not configured. Please contact the site administrator.",
+      });
+      setPending(false);
+      return;
+    }
+
+    try {
+      await emailjs.send(
+        serviceId,
+        templateId,
+        {
+          clinic_name: CLINIC.name,
+          name,
+          phone,
+          email,
+          preferred,
+          service,
+          message,
+        },
+        publicKey,
+      );
+
+      event.currentTarget.reset();
+      setState({
+        ok: true,
+        message:
+          "Thank you — we received your request. Our team will call or WhatsApp you shortly to confirm your visit.",
+      });
+    } catch (error) {
+      console.error("EmailJS error:", error);
+      setState({
+        ok: false,
+        message:
+          "Sorry, we could not send your request right now. Please call or WhatsApp us directly.",
+      });
+    } finally {
+      setPending(false);
+    }
+  };
 
   return (
-    <form action={formAction} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label htmlFor="name" className="text-xs font-semibold text-slate-700">
