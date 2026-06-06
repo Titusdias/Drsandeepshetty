@@ -2,11 +2,11 @@ import {
   HeartPulse,
   Layers,
   Scissors,
-  Smile,
   Sparkles,
   Stethoscope,
 } from "lucide-react";
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 
 import { SectionReveal } from "@/components/motion/section-reveal";
@@ -97,7 +97,13 @@ export default function ServicesPage() {
                     Invisalign-certified workflows for teens and adults, plus options for fixed appliances when clinically preferred.
                   </p>
                 </div>
-                <Smile className="hidden size-16 text-teal-200 md:block" />
+                <Image
+                  src="/smile-logo.png"
+                  alt=""
+                  width={64}
+                  height={64}
+                  className="hidden md:block"
+                />
               </div>
             </SectionReveal>
           </div>

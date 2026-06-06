@@ -1,7 +1,8 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, Menu, Smile, X } from "lucide-react";
+import { ChevronDown, Menu, X } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -27,8 +28,15 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 shadow-sm backdrop-blur-md">
       <nav className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-3 py-3 sm:px-6">
         <Link href="/" className="flex min-w-0 items-center gap-2.5">
-          <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-[#2D8A8A] text-white shadow-sm">
-            <Smile className="size-5" aria-hidden />
+          <div className="relative size-11 shrink-0 overflow-hidden rounded-2xl bg-black shadow-sm">
+            <Image
+              src="/smile-logo.png"
+              alt={`${CLINIC.shortName} logo`}
+              fill
+              className="object-contain p-1.5"
+              sizes="44px"
+              priority
+            />
           </div>
           <div className="min-w-0">
             <p className="truncate text-sm font-bold text-slate-900 sm:text-base">

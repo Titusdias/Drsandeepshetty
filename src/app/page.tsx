@@ -18,7 +18,7 @@ import { SectionReveal } from "@/components/motion/section-reveal";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CLINIC, SERVICE_LIST } from "@/lib/site-config";
-import { useClinicSettings, useTestimonials, useHeroSections } from "@/lib/hooks";
+import { useClinicSettings, useTestimonials } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
 const herobhai =
   "https://images.unsplash.com/photo-1629909615184-74f495363b67?auto=format&fit=crop&w=1920&q=80";
@@ -97,7 +97,7 @@ export default function Home() {
 
   // Fallback to hardcoded data if Firestore data isn't loaded yet
   const displaySettings = settings || CLINIC;
-  const displayTestimonials: ReviewItem[] = (testimonials || [])
+  const displayTestimonials: ReviewItem[] = (testimonials || reviews)
     .filter(t => t.featured)
     .slice(0, 6)
     .map(t => ({
@@ -275,7 +275,7 @@ export default function Home() {
             </div>
             <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white p-2 shadow-lg">
               <Image
-                src="/dr/download (3).jpg"
+                src="/download (3).jpg"
                 alt="Dental technology and sterile instruments"
                 width={900}
                 height={700}
