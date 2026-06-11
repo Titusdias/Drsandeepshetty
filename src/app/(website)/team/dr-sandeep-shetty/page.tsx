@@ -80,7 +80,7 @@ export default function DrSandeepShettyProfile() {
             
             <div className="mt-10 rounded-2xl bg-[#2D8A8A]/5 p-8 border border-[#2D8A8A]/10">
               <p className="text-xl font-medium italic text-[#2D8A8A]">
-                "For Dr. Sandeep Shetty, orthodontics is not just about straightening teeth. It is about improving confidence, function, comfort, and quality of life — one smile at a time."
+                &quot;For Dr. Sandeep Shetty, orthodontics is not just about straightening teeth. It is about improving confidence, function, comfort, and quality of life — one smile at a time.&quot;
               </p>
             </div>
             
