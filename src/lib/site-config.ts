@@ -3,7 +3,7 @@
 export const CLINIC = {
   name: "Dr. Sandeep Shetty's Dental Clinic and Orthodontic Centre",
   shortName: "Dr. Sandeep Shetty",
-  url: "https://drsandeepshettydental.com", // Replace with actual production domain
+  url: "https://www.drsandeepshetty.in", // Replace with actual production domain
   tagline: "Where comfort meets innovation",
   city: "Mangaluru",
   region: "Karnataka",
