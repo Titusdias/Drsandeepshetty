@@ -1,4 +1,4 @@
-import { defineField, defineType } from 'sanity'
+import { defineField, defineType, defineArrayMember } from 'sanity'
 
 export const contactSection = defineType({
   name: 'contactSection',
@@ -15,7 +15,7 @@ export const contactSection = defineType({
       name: 'phoneNumbers',
       title: 'Phone Numbers',
       type: 'array',
-      of: [{ type: 'string' }],
+      of: [defineArrayMember({ type: 'string' })],
     }),
     defineField({
       name: 'email',
@@ -38,7 +38,7 @@ export const contactSection = defineType({
       title: 'Clinic Timings',
       type: 'array',
       of: [
-        defineField({
+        defineArrayMember({
           name: 'timing',
           title: 'Timing Slot',
           type: 'object',

@@ -1,4 +1,4 @@
-import { defineType, defineField } from 'sanity'
+import { defineType, defineField, defineArrayMember } from 'sanity'
 
 export const page = defineType({
   name: 'page',
@@ -26,12 +26,12 @@ export const page = defineType({
       title: 'Page Builder',
       type: 'array',
       of: [
-        { type: 'heroSection' },
-        { type: 'aboutSection' },
-        { type: 'servicesSection' },
-        { type: 'gallerySection' },
-        { type: 'teamSection' },
-        { type: 'contactSection' },
+        defineArrayMember({ type: 'heroSection' }),
+        defineArrayMember({ type: 'aboutSection' }),
+        defineArrayMember({ type: 'servicesSection' }),
+        defineArrayMember({ type: 'gallerySection' }),
+        defineArrayMember({ type: 'teamSection' }),
+        defineArrayMember({ type: 'contactSection' }),
       ],
     }),
   ],

@@ -1,4 +1,4 @@
-import { defineType, defineField } from 'sanity'
+import { defineType, defineField, defineArrayMember } from 'sanity'
 
 export const features = defineType({
   name: 'features',
@@ -15,13 +15,14 @@ export const features = defineType({
       title: 'Feature Items',
       type: 'array',
       of: [
-        {
+        defineArrayMember({
+          name: 'featureItem',
           type: 'object',
           fields: [
             defineField({ name: 'title', title: 'Title', type: 'string' }),
             defineField({ name: 'description', title: 'Description', type: 'text' }),
           ],
-        },
+        }),
       ],
     }),
   ],

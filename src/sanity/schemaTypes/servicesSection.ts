@@ -1,4 +1,4 @@
-import { defineField, defineType } from 'sanity'
+import { defineField, defineType, defineArrayMember } from 'sanity'
 
 export const servicesSection = defineType({
   name: 'servicesSection',
@@ -16,7 +16,7 @@ export const servicesSection = defineType({
       title: 'Services',
       type: 'array',
       of: [
-        defineField({
+        defineArrayMember({
           name: 'service',
           title: 'Service',
           type: 'object',
