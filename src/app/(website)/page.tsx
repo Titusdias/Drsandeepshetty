@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { ReviewsWall, type ReviewItem } from "@/components/clinic/reviews-wall";
 import { SectionReveal } from "@/components/motion/section-reveal";
@@ -20,6 +20,9 @@ import { Badge } from "@/components/ui/badge";
 import { CLINIC, SERVICE_LIST } from "@/lib/site-config";
 import { useClinicSettings, useTestimonials } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
+import { client } from "@/sanity/lib/client";
+import { urlForImage } from "@/sanity/lib/image";
+
 const herobhai =
   "https://images.unsplash.com/photo-1629909615184-74f495363b67?auto=format&fit=crop&w=1920&q=80";
  
@@ -94,6 +97,23 @@ function AnimatedStat({ value, label }: { value: number; label: string }) {
 export default function Home() {
   const { data: settings } = useClinicSettings();
   const { data: testimonials } = useTestimonials();
+  const [sanityHero, setSanityHero] = useState<any>(null);
+
+  useEffect(() => {
+    async function fetchSanityData() {
+      const query = `*[_type == "page" && slug.current == "home"][0]`;
+      try {
+        const pageData = await client.fetch(query);
+        const heroSection = pageData?.pageBuilder?.find((block: any) => block._type === 'heroSection');
+        if (heroSection) {
+          setSanityHero(heroSection);
+        }
+      } catch (err) {
+        console.error("Error fetching Sanity home page data", err);
+      }
+    }
+    fetchSanityData();
+  }, []);
 
   // Fallback to hardcoded data if Firestore data isn't loaded yet
   const displaySettings = settings || CLINIC;
@@ -106,6 +126,10 @@ export default function Home() {
       featured: true,
     }));
 
+  const heroTitle = sanityHero?.title || `Exceptional dental care in ${displaySettings.city}.`;
+  const heroSubtitle = sanityHero?.subtitle || displaySettings.tagline;
+  const heroBg = sanityHero?.backgroundImage ? urlForImage(sanityHero.backgroundImage).url() : herobhai;
+
   return (
     <>
       {/* Full-width background image */}
@@ -113,7 +137,7 @@ export default function Home() {
         {/* Full-width background image */}
         <div className="absolute inset-0 z-0">
           <Image
-            src={herobhai}
+            src={heroBg}
             alt="Dental background image"
             fill
             className="object-cover object-center"
@@ -136,10 +160,10 @@ export default function Home() {
               </Badge>
             </div>
             <h1 className="text-[2rem] font-bold leading-[1.12] tracking-tight text-white sm:text-5xl lg:text-[3.15rem]">
-              Exceptional dental care in {displaySettings.city}.
+              {heroTitle}
             </h1>
-            <p className="text-xl font-semibold text-teal-300 sm:text-2xl">
-              {displaySettings.tagline}
+            <p className="text-xl font-semibold text-teal-300 sm:text-2xl whitespace-pre-wrap">
+              {heroSubtitle}
             </p>
             <p className="max-w-xl text-base leading-relaxed text-white/85 sm:text-lg">
               A modern, minimally stressful clinic experience—clear guidance,
@@ -152,7 +176,9 @@ export default function Home() {
                 size="lg"
                 className="w-full rounded-full bg-[#2D8A8A] px-10 hover:bg-[#236f6f] sm:w-auto"
               >
-                <Link href="/contact">Book your visit</Link>
+                <Link href={sanityHero?.ctaButton?.url || "/contact"}>
+                  {sanityHero?.ctaButton?.text || "Book your visit"}
+                </Link>
               </Button>
               <Button
                 variant="outline"

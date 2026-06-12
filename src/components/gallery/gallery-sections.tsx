@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { SectionReveal } from "@/components/motion/section-reveal";
+import { urlForImage } from "@/sanity/lib/image";
 
 const testimonialImages = [
   {
@@ -118,11 +119,14 @@ type GalleryImageProps = {
 function GalleryImage({ src, alt, naturalSize, objectPosition }: GalleryImageProps) {
   const [isLoading, setIsLoading] = useState(true);
 
+  // Avoid URI encoding if it's an external Sanity URL
+  const formattedSrc = src.startsWith('http') ? src : encodeURI(src);
+
   if (naturalSize) {
     return (
       <div className="relative overflow-hidden rounded-2xl bg-slate-100 ring-1 ring-slate-200/50 group">
         <Image
-          src={encodeURI(src)}
+          src={formattedSrc}
           alt={alt}
           width={0}
           height={0}
@@ -143,7 +147,7 @@ function GalleryImage({ src, alt, naturalSize, objectPosition }: GalleryImagePro
   return (
     <div className="relative overflow-hidden rounded-2xl bg-slate-100 ring-1 ring-slate-200/50 aspect-[4/3] group">
       <Image
-        src={encodeURI(src)}
+        src={formattedSrc}
         alt={alt}
         fill
         className={`object-cover ${objectPosition || "object-top"} transition-all duration-500 group-hover:scale-105 ${
@@ -204,7 +208,37 @@ function GallerySection({
   );
 }
 
-export default function GallerySections() {
+export default function GallerySections({ sanityData }: { sanityData?: any[] }) {
+  if (sanityData && sanityData.length > 0) {
+    return (
+      <>
+        {sanityData.map((section: any, idx: number) => {
+          const accents = [
+            "from-blue-500 to-blue-600",
+            "from-amber-500 to-amber-600",
+            "from-green-500 to-green-600",
+            "from-purple-500 to-purple-600",
+          ];
+          const accent = accents[idx % accents.length];
+          
+          const images = section.images?.map((img: any) => ({
+            src: urlForImage(img).url(),
+            alt: img.alt || section.title,
+          })) || [];
+
+          return (
+            <GallerySection
+              key={section._key || idx}
+              title={section.title}
+              accent={accent}
+              images={images}
+            />
+          );
+        })}
+      </>
+    );
+  }
+
   return (
     <>
       <GallerySection

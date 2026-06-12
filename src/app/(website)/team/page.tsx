@@ -7,12 +7,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CLINIC } from "@/lib/site-config";
 
+import { client } from "@/sanity/lib/client";
+import { urlForImage } from "@/sanity/lib/image";
+
 export const metadata: Metadata = {
   title: `Our Team | ${CLINIC.name}`,
   description: `Meet the clinicians and care team behind ${CLINIC.name}, ${CLINIC.city}.`,
 };
 
-const team = [
+const defaultTeam = [
   {
     name: "Dr. Sandeep Shetty",
     role: "Lead clinician · orthodontics & multi-specialty dentistry",
@@ -30,7 +33,26 @@ const team = [
   },
 ];
 
-export default function TeamPage() {
+export default async function TeamPage() {
+  const query = `*[_type == "page" && slug.current == "team"][0]`;
+  const pageData = await client.fetch(query, {}, {
+    next: { tags: ["page"] }
+  });
+
+  const teamSection = pageData?.pageBuilder?.find((block: any) => block._type === 'teamSection');
+  const displayTitle = teamSection?.title || "People who put your smile first";
+  
+  let team = defaultTeam;
+  if (teamSection?.members && teamSection.members.length > 0) {
+    team = teamSection.members.map((member: any) => ({
+      name: member.name,
+      role: member.designation,
+      bio: member.bio || "", // Note: Schema doesn't explicitly have bio currently, but just in case
+      image: member.profilePicture ? urlForImage(member.profilePicture).url() : "/Screenshot 2026-06-03 213443.png",
+      slug: member.slug?.current || null,
+    }));
+  }
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20">
       <SectionReveal className="max-w-3xl">
@@ -38,7 +60,7 @@ export default function TeamPage() {
           Our team
         </p>
         <h1 className="mt-3 text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl">
-          People who put your smile first
+          {displayTitle}
         </h1>
         <p className="mt-6 text-lg text-slate-600">
           Behind every procedure is a coordinated team—from sterilization loops to
@@ -47,7 +69,7 @@ export default function TeamPage() {
       </SectionReveal>
 
       <div className="mx-auto mt-14 grid max-w-4xl gap-8 lg:grid-cols-2">
-        {team.map((member, i) => (
+        {team.map((member: any, i: number) => (
           <SectionReveal key={member.name} delay={i * 0.06} className="flex">
             <Card className="flex flex-col w-full overflow-hidden border-slate-200/90 shadow-lg">
               <div className="relative aspect-[4/3] w-full bg-slate-100">
@@ -66,9 +88,11 @@ export default function TeamPage() {
                     {member.role}
                   </p>
                 </div>
-                <p className="text-sm leading-relaxed text-slate-600 flex-grow">
-                  {member.bio}
-                </p>
+                {member.bio && (
+                  <p className="text-sm leading-relaxed text-slate-600 flex-grow">
+                    {member.bio}
+                  </p>
+                )}
                 {member.slug && (
                   <Button asChild variant="outline" className="w-full mt-4 text-[#2D8A8A] hover:text-[#236b6b] hover:bg-[#2D8A8A]/10 border-[#2D8A8A]/20">
                     <Link href={`/team/${member.slug}`}>Know More</Link>

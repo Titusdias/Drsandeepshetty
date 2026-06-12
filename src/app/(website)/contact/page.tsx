@@ -7,12 +7,30 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CLINIC } from "@/lib/site-config";
 
+import { client } from "@/sanity/lib/client";
+
 export const metadata: Metadata = {
   title: `Contact & Book Appointment | ${CLINIC.shortName}`,
   description: `Book a visit at ${CLINIC.name} in ${CLINIC.city}. Call ${CLINIC.phoneDisplay} or request an appointment online.`,
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const query = `*[_type == "page" && slug.current == "contact"][0]`;
+  const pageData = await client.fetch(query, {}, {
+    next: { tags: ["page"] }
+  });
+
+  const contactSection = pageData?.pageBuilder?.find((block: any) => block._type === 'contactSection');
+  
+  const displayTitle = contactSection?.title || "Book your smile visit";
+  const displayAddress = contactSection?.address || CLINIC.addressLine;
+  const displayMapEmbed = contactSection?.mapEmbedLink || CLINIC.mapEmbedSrc;
+
+  // Getting phone numbers from Sanity or fallback
+  const phoneNumbers = contactSection?.phoneNumbers && contactSection.phoneNumbers.length > 0 
+    ? contactSection.phoneNumbers 
+    : [CLINIC.phoneDisplay, CLINIC.phoneDisplay2].filter(Boolean);
+
   return (
     <div className="relative overflow-hidden">
       <div className="absolute inset-x-0 top-0 h-72 bg-gradient-to-b from-teal-100/40 to-transparent" />
@@ -22,7 +40,7 @@ export default function ContactPage() {
             Contact
           </p>
           <h1 className="mt-3 text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl">
-            Book your smile visit 
+            {displayTitle}
           </h1>
           <p className="mt-5 text-lg text-slate-600">
             Reach out to us directly via WhatsApp or phone to schedule your appointment.
@@ -48,20 +66,17 @@ export default function ContactPage() {
                       Chat on WhatsApp
                     </a>
                   </Button>
-                  <Button asChild size="lg" variant="outline" className="h-14 w-full rounded-xl border-[#2D8A8A] text-base text-[#2D8A8A] hover:bg-[#2D8A8A]/10">
-                    <a href={CLINIC.phoneTel}>
-                      <PhoneCall className="mr-2 size-5" />
-                      Call {CLINIC.phoneDisplay}
-                    </a>
-                  </Button>
-                  {CLINIC.phoneTel2 && (
-                    <Button asChild size="lg" variant="outline" className="h-14 w-full rounded-xl border-[#2D8A8A] text-base text-[#2D8A8A] hover:bg-[#2D8A8A]/10">
-                      <a href={CLINIC.phoneTel2}>
-                        <PhoneCall className="mr-2 size-5" />
-                        Call {CLINIC.phoneDisplay2}
-                      </a>
-                    </Button>
-                  )}
+                  {phoneNumbers.map((phone: string, idx: number) => {
+                    const phoneTel = phone.replace(/[^0-9+]/g, '');
+                    return (
+                      <Button key={idx} asChild size="lg" variant="outline" className="h-14 w-full rounded-xl border-[#2D8A8A] text-base text-[#2D8A8A] hover:bg-[#2D8A8A]/10">
+                        <a href={`tel:${phoneTel.startsWith('+') ? phoneTel : `+91${phoneTel}`}`}>
+                          <PhoneCall className="mr-2 size-5" />
+                          Call {phone}
+                        </a>
+                      </Button>
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
@@ -78,8 +93,8 @@ export default function ContactPage() {
                     <div className="flex gap-3">
                       <MapPin className="mt-0.5 size-5 shrink-0 text-[#2D8A8A]" />
                       <div>
-                        <p className="font-semibold text-slate-900">Clinic 1</p>
-                        <p className="mt-1 text-slate-600">{CLINIC.addressLine}</p>
+                        <p className="font-semibold text-slate-900">Main Clinic</p>
+                        <p className="mt-1 text-slate-600 whitespace-pre-wrap">{displayAddress}</p>
                         <a
                           href={CLINIC.googleMapsUrl}
                           target="_blank"
@@ -90,33 +105,36 @@ export default function ContactPage() {
                         </a>
                       </div>
                     </div>
-                    <div className="flex gap-3">
-                      <MapPin className="mt-0.5 size-5 shrink-0 text-[#2D8A8A]" />
-                      <div>
-                        <p className="font-semibold text-slate-900">Clinic 2</p>
-                        <p className="mt-1 text-slate-600">{CLINIC.addressLine2}</p>
-                      </div>
-                    </div>
                   </div>
                   <div className="border-t border-slate-100 pt-5">
                     <p className="text-sm font-semibold text-slate-900">
                       Hours
                     </p>
-                    <OpenStatusDynamic />
+                    {contactSection?.timings && contactSection.timings.length > 0 ? (
+                      <div className="mt-2 space-y-1">
+                        {contactSection.timings.map((t: any, i: number) => (
+                          <div key={i} className="flex justify-between text-sm">
+                            <span className="text-slate-600">{t.days}</span>
+                            <span className="font-medium text-slate-900">{t.hours}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <OpenStatusDynamic />
+                    )}
                   </div>
                   <div className="grid gap-3 pt-4 sm:grid-cols-2">
-                    <Button asChild className="w-full rounded-xl">
-                      <a href={CLINIC.phoneTel}>
-                        <PhoneCall className="size-4" />
-                        Call {CLINIC.phoneDisplay}
-                      </a>
-                    </Button>
-                    <Button asChild variant="outline" className="w-full rounded-xl">
-                      <a href={CLINIC.phoneTel2}>
-                        <PhoneCall className="size-4" />
-                        Call {CLINIC.phoneDisplay2}
-                      </a>
-                    </Button>
+                    {phoneNumbers.slice(0, 2).map((phone: string, idx: number) => {
+                      const phoneTel = phone.replace(/[^0-9+]/g, '');
+                      return (
+                        <Button key={idx} asChild className={idx === 1 ? "w-full rounded-xl" : "w-full rounded-xl bg-[#2D8A8A] hover:bg-[#236b6b]"} variant={idx === 1 ? "outline" : "default"}>
+                          <a href={`tel:${phoneTel.startsWith('+') ? phoneTel : `+91${phoneTel}`}`}>
+                            <PhoneCall className="size-4 mr-2" />
+                            Call {phone}
+                          </a>
+                        </Button>
+                      );
+                    })}
                   </div>
                 </CardContent>
               </Card>
@@ -124,7 +142,7 @@ export default function ContactPage() {
               <Card className="overflow-hidden rounded-3xl border-slate-200/90 p-0 shadow-lg">
                 <iframe
                   title={`Map — ${CLINIC.name}`}
-                  src={CLINIC.mapEmbedSrc}
+                  src={displayMapEmbed}
                   className="aspect-[4/3] min-h-[280px] w-full border-0"
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"

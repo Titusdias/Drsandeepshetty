@@ -8,6 +8,7 @@ import Link from "next/link";
 import { CLINIC } from "@/lib/site-config";
 
 import { client } from "@/sanity/lib/client";
+import { urlForImage } from "@/sanity/lib/image";
 
 export const metadata: Metadata = {
   title: `About Us | ${CLINIC.name}`,
@@ -53,18 +54,29 @@ export default async function AboutPage() {
             </div>
           </SectionReveal>
           <div className="relative overflow-hidden rounded-[2rem] border-8 border-white bg-white shadow-[0_35px_90px_-35px_rgba(15,23,42,0.45)]">
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="aspect-[4/3] w-full object-cover"
-            >
-              {/* Place your video file inside the Next.js 'public' folder */}
-              <source src="/videoplayback.mp4" type="video/mp4" />
-              {/* Fallback text just in case the browser doesn't support video */}
-              Your browser does not support the video tag.
-            </video>
+            {aboutSection?.image ? (
+              <Image
+                src={urlForImage(aboutSection.image).url()}
+                alt={displayTitle}
+                width={800}
+                height={600}
+                className="aspect-[4/3] w-full object-cover"
+                priority
+              />
+            ) : (
+              <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="aspect-[4/3] w-full object-cover"
+              >
+                {/* Place your video file inside the Next.js 'public' folder */}
+                <source src="/videoplayback.mp4" type="video/mp4" />
+                {/* Fallback text just in case the browser doesn't support video */}
+                Your browser does not support the video tag.
+              </video>
+            )}
           </div>
         </div>
       </section>

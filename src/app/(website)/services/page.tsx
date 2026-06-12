@@ -14,6 +14,9 @@ import { Button } from "@/components/ui/button";
 import { CLINIC, SERVICE_LIST } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
 
+import { client } from "@/sanity/lib/client";
+import { urlForImage } from "@/sanity/lib/image";
+
 export const metadata: Metadata = {
   title: `Dental Services | ${CLINIC.name}`,
   description: `Full range of dental services in ${CLINIC.city}: implants, orthodontics, cosmetic care, emergencies, and more.`,
@@ -46,7 +49,16 @@ const groups = [
   
 ];
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const query = `*[_type == "page" && slug.current == "services"][0]`;
+  const pageData = await client.fetch(query, {}, {
+    next: { tags: ["page"] }
+  });
+
+  const servicesSection = pageData?.pageBuilder?.find((block: any) => block._type === 'servicesSection');
+  const displayTitle = servicesSection?.title || "Total dental care, tailored for you";
+  const sanityServices = servicesSection?.services || [];
+
   return (
     <div>
       <section className="border-b border-slate-200 bg-white">
@@ -56,7 +68,7 @@ export default function ServicesPage() {
               Services
             </p>
             <h1 className="mt-3 text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl">
-              Total dental care, tailored for you
+              {displayTitle}
             </h1>
             <p className="mt-5 text-lg text-slate-600">
               Explore the treatments we routinely provide at our centre. 
@@ -67,17 +79,35 @@ export default function ServicesPage() {
           </SectionReveal>
 
           <div className="mt-14 grid gap-6 lg:grid-cols-3">
-            {groups.map(({ title, desc, icon: Icon }, i) => (
-              <SectionReveal
-                key={title}
-                delay={i * 0.05}
-                className="rounded-3xl border border-slate-200 bg-[#FDFBF7]/60 p-6 shadow-sm lg:col-span-1"
-              >
-                <Icon className="size-10 text-[#2D8A8A]" />
-                <h2 className="mt-4 text-xl font-bold text-slate-900">{title}</h2>
-                <p className="mt-2 text-sm text-slate-600">{desc}</p>
-              </SectionReveal>
-            ))}
+            {sanityServices.length > 0 ? (
+              sanityServices.map((service: any, i: number) => (
+                <SectionReveal
+                  key={service.title || i}
+                  delay={i * 0.05}
+                  className="rounded-3xl border border-slate-200 bg-[#FDFBF7]/60 p-6 shadow-sm lg:col-span-1"
+                >
+                  {service.icon ? (
+                    <Image src={urlForImage(service.icon).url()} alt={service.title} width={40} height={40} className="mb-4 text-[#2D8A8A]" />
+                  ) : (
+                    <Stethoscope className="size-10 text-[#2D8A8A]" />
+                  )}
+                  <h2 className="mt-4 text-xl font-bold text-slate-900">{service.title}</h2>
+                  <p className="mt-2 text-sm text-slate-600">{service.description}</p>
+                </SectionReveal>
+              ))
+            ) : (
+              groups.map(({ title, desc, icon: Icon }, i) => (
+                <SectionReveal
+                  key={title}
+                  delay={i * 0.05}
+                  className="rounded-3xl border border-slate-200 bg-[#FDFBF7]/60 p-6 shadow-sm lg:col-span-1"
+                >
+                  <Icon className="size-10 text-[#2D8A8A]" />
+                  <h2 className="mt-4 text-xl font-bold text-slate-900">{title}</h2>
+                  <p className="mt-2 text-sm text-slate-600">{desc}</p>
+                </SectionReveal>
+              ))
+            )}
             <SectionReveal
               delay={0.2}
               className="rounded-3xl border border-teal-200 bg-gradient-to-br from-teal-50 to-white p-6 shadow-md lg:col-span-3"
