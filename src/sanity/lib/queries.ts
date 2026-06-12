@@ -142,7 +142,11 @@ export const galleryPageQuery = `*[_type == "galleryPage"][0]{
 
 export const galleryItemsQuery = `*[_type == "galleryItem" && isActive != false] | order(order asc) {
   title,
-  image,
+  image {
+    asset->,
+    hotspot,
+    crop
+  },
   altText,
   category
 }`
