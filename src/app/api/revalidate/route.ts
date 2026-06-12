@@ -1,8 +1,8 @@
-import { revalidateTag } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { type NextRequest, NextResponse } from 'next/server';
 import { parseBody } from 'next-sanity/webhook';
+import { webhookRevalidationMap } from '@/sanity/schemaTypes/webhookMap';
 
-// Ensure this environment variable is set in your .env.local
 const secret = process.env.SANITY_REVALIDATE_SECRET;
 
 export async function POST(req: NextRequest) {
@@ -15,12 +15,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // `parseBody` verifies the signature and parses the body.
-    // It requires the raw text of the request.
     const { isValidSignature, body } = await parseBody(
       req,
       secret,
-      true // Indicates we want to read the request body as text
+      true
     );
 
     if (!isValidSignature) {
@@ -35,26 +33,37 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message }, { status: 400 });
     }
 
-    // Revalidate a specific tag related to the document type
-    // e.g. if _type is 'post', it clears 'post' tag cache
-    revalidateTag(body._type as string, { expire: 0 });
+    const docType = body._type as string;
+    const targets = webhookRevalidationMap[docType] ?? [docType];
 
-    // Optionally revalidate a generic tag
-    // revalidateTag('sanity', { expire: 0 });
+    const revalidatedTags: string[] = [];
+    const revalidatedPaths: string[] = [];
 
-    console.log(`Successfully revalidated tag: ${body._type}`);
+    for (const target of targets) {
+      if (target.startsWith('/')) {
+        revalidatePath(target);
+        revalidatedPaths.push(target);
+      } else {
+        revalidateTag(target, { expire: 0 });
+        revalidatedTags.push(target);
+      }
+    }
+
+    console.log(
+      `Revalidated ${docType}: tags=[${revalidatedTags.join(', ')}] paths=[${revalidatedPaths.join(', ')}]`
+    );
 
     return NextResponse.json({
       status: 200,
       revalidated: true,
       now: Date.now(),
       body,
+      revalidatedTags,
+      revalidatedPaths,
     });
-  } catch (err: any) {
-    console.error('Revalidation error:', err.message);
-    return NextResponse.json(
-      { message: err.message || 'Internal Server Error' },
-      { status: 500 }
-    );
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Internal Server Error';
+    console.error('Revalidation error:', message);
+    return NextResponse.json({ message }, { status: 500 });
   }
 }

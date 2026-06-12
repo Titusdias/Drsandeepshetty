@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { CLINIC } from "@/lib/site-config";
 
 import { client } from "@/sanity/lib/client";
+import { branchesQuery, contactPageQuery, siteSettingsQuery, sanityFetchOptions } from "@/sanity/lib/queries";
 
 export const metadata: Metadata = {
   title: `Contact & Book Appointment | ${CLINIC.shortName}`,
@@ -15,21 +16,22 @@ export const metadata: Metadata = {
 };
 
 export default async function ContactPage() {
-  const query = `*[_type == "page" && slug.current == "contact"][0]`;
-  const pageData = await client.fetch(query, {}, {
-    next: { tags: ["page"] }
-  });
+  const [page, settings, branches] = await Promise.all([
+    client.fetch(contactPageQuery, {}, sanityFetchOptions("contact")),
+    client.fetch(siteSettingsQuery, {}, sanityFetchOptions("layout")),
+    client.fetch(branchesQuery, {}, sanityFetchOptions("branches")),
+  ]);
 
-  const contactSection = pageData?.pageBuilder?.find((block: any) => block._type === 'contactSection');
-  
-  const displayTitle = contactSection?.title || "Book your smile visit";
-  const displayAddress = contactSection?.address || CLINIC.addressLine;
-  const displayMapEmbed = contactSection?.mapEmbedLink || CLINIC.mapEmbedSrc;
+  const displayTitle = page?.hero_heading || "Book your smile visit";
+  const mainBranch = branches?.[0];
+  const displayAddress = mainBranch?.address || CLINIC.addressLine;
+  const displayMapEmbed = page?.mapEmbedUrl || CLINIC.mapEmbedSrc;
 
-  // Getting phone numbers from Sanity or fallback
-  const phoneNumbers = contactSection?.phoneNumbers && contactSection.phoneNumbers.length > 0 
-    ? contactSection.phoneNumbers 
-    : [CLINIC.phoneDisplay, CLINIC.phoneDisplay2].filter(Boolean);
+  const phoneNumbers = [
+    settings?.phone,
+    mainBranch?.phone,
+    CLINIC.phoneDisplay2,
+  ].filter(Boolean) as string[];
 
   return (
     <div className="relative overflow-hidden">
@@ -37,13 +39,13 @@ export default async function ContactPage() {
       <div className="relative mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
         <SectionReveal className="max-w-3xl">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#2D8A8A]">
-            Contact
+            {page?.hero_sectionLabel || "Contact"}
           </p>
           <h1 className="mt-3 text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl">
             {displayTitle}
           </h1>
           <p className="mt-5 text-lg text-slate-600">
-            Reach out to us directly via WhatsApp or phone to schedule your appointment.
+            {page?.hero_subheading || "Reach out to us directly via WhatsApp or phone to schedule your appointment."}
           </p>
         </SectionReveal>
 
@@ -53,10 +55,10 @@ export default async function ContactPage() {
               <CardContent className="flex h-full flex-col items-center justify-center space-y-8 p-6 text-center sm:p-10">
                 <div>
                   <h2 className="text-2xl font-bold text-slate-900">
-                    Get in touch directly
+                    {page?.formHeading || "Get in touch directly"}
                   </h2>
                   <p className="mt-3 text-slate-600">
-                    We prefer direct communication to give you the fastest response. Click below to message us on WhatsApp or call our clinic.
+                    {page?.formSubheading || "We prefer direct communication to give you the fastest response. Click below to message us on WhatsApp or call our clinic."}
                   </p>
                 </div>
                 <div className="flex w-full max-w-sm flex-col gap-4">
@@ -110,15 +112,8 @@ export default async function ContactPage() {
                     <p className="text-sm font-semibold text-slate-900">
                       Hours
                     </p>
-                    {contactSection?.timings && contactSection.timings.length > 0 ? (
-                      <div className="mt-2 space-y-1">
-                        {contactSection.timings.map((t: any, i: number) => (
-                          <div key={i} className="flex justify-between text-sm">
-                            <span className="text-slate-600">{t.days}</span>
-                            <span className="font-medium text-slate-900">{t.hours}</span>
-                          </div>
-                        ))}
-                      </div>
+                    {settings?.hours ? (
+                      <p className="mt-2 text-sm text-slate-600">{settings.hours}</p>
                     ) : (
                       <OpenStatusDynamic />
                     )}

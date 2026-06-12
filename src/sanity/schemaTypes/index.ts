@@ -1,24 +1,35 @@
 import { type SchemaTypeDefinition } from 'sanity'
-import { page } from './page'
-import { heroSection } from './heroSection'
-import { aboutSection } from './aboutSection'
-import { servicesSection } from './servicesSection'
-import { gallerySection } from './gallerySection'
-import { teamSection } from './teamSection'
-import { contactSection } from './contactSection'
-import { globalSettings } from './globalSettings'
-// Removing older schema imports as they are being replaced by the Page Builder types
-// If you still need them, you can add `hero`, `features`, `richText` back.
+
+import pageSeo from './pageSeo'
+import omanBranch from './omanBranch'
+import siteSettings from './siteSettings'
+import branch from './branch'
+import homePage from './homePage'
+import aboutPage from './aboutPage'
+import servicesPage from './servicesPage'
+import teamMember from './teamMember'
+import teamPage from './teamPage'
+import galleryItem from './galleryItem'
+import galleryPage from './galleryPage'
+import contactPage from './contactPage'
+import navigationMenu from './navigationMenu'
+import seoDefaults from './seoDefaults'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
-    page,
-    heroSection,
-    aboutSection,
-    servicesSection,
-    gallerySection,
-    teamSection,
-    contactSection,
-    globalSettings
+    pageSeo,
+    omanBranch,
+    siteSettings,
+    branch,
+    homePage,
+    aboutPage,
+    servicesPage,
+    teamMember,
+    teamPage,
+    galleryItem,
+    galleryPage,
+    contactPage,
+    navigationMenu,
+    seoDefaults,
   ],
 }

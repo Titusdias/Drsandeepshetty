@@ -9,6 +9,7 @@ import { CLINIC } from "@/lib/site-config";
 
 import { client } from "@/sanity/lib/client";
 import { urlForImage } from "@/sanity/lib/image";
+import { teamMembersQuery, teamPageQuery, sanityFetchOptions } from "@/sanity/lib/queries";
 
 export const metadata: Metadata = {
   title: `Our Team | ${CLINIC.name}`,
@@ -34,37 +35,34 @@ const defaultTeam = [
 ];
 
 export default async function TeamPage() {
-  const query = `*[_type == "page" && slug.current == "team"][0]`;
-  const pageData = await client.fetch(query, {}, {
-    next: { tags: ["page"] }
-  });
+  const [page, members] = await Promise.all([
+    client.fetch(teamPageQuery, {}, sanityFetchOptions("team")),
+    client.fetch(teamMembersQuery, {}, sanityFetchOptions("team")),
+  ]);
 
-  const teamSection = pageData?.pageBuilder?.find((block: any) => block._type === 'teamSection');
-  const displayTitle = teamSection?.title || "People who put your smile first";
-  
-  let team = defaultTeam;
-  if (teamSection?.members && teamSection.members.length > 0) {
-    team = teamSection.members.map((member: any) => ({
-      name: member.name,
-      role: member.designation,
-      bio: member.bio || "", // Note: Schema doesn't explicitly have bio currently, but just in case
-      image: member.profilePicture ? urlForImage(member.profilePicture).url() : "/Screenshot 2026-06-03 213443.png",
-      slug: member.slug?.current || null,
-    }));
-  }
+  const displayTitle = page?.hero_heading || "People who put your smile first";
+
+  const team = members?.length
+    ? members.map((member: { name: string; role?: string; bio?: string; photo?: unknown; slug?: string }) => ({
+        name: member.name,
+        role: member.role,
+        bio: member.bio || "",
+        image: member.photo ? urlForImage(member.photo).url() : "/Screenshot 2026-06-03 213443.png",
+        slug: member.slug || null,
+      }))
+    : defaultTeam;
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20">
       <SectionReveal className="max-w-3xl">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#2D8A8A]">
-          Our team
+          {page?.hero_sectionLabel || "Our team"}
         </p>
         <h1 className="mt-3 text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl">
           {displayTitle}
         </h1>
         <p className="mt-6 text-lg text-slate-600">
-          Behind every procedure is a coordinated team—from sterilization loops to
-          front-desk reminders—so visits feel effortless and safe.
+          {page?.hero_subheading || "Behind every procedure is a coordinated team—from sterilization loops to front-desk reminders—so visits feel effortless and safe."}
         </p>
       </SectionReveal>
 
@@ -107,17 +105,21 @@ export default async function TeamPage() {
       <SectionReveal delay={0.2} className="mx-auto mt-20 max-w-4xl text-center">
         <div className="rounded-2xl bg-slate-50 px-6 py-12 shadow-sm border border-slate-100 sm:px-12 sm:py-16">
           <h2 className="text-3xl font-bold tracking-tight text-slate-900">
-            Join Our Team
+            {page?.joinSection_heading || "Join Our Team"}
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-600">
-            We are always looking for passionate and dedicated professionals to join our growing clinic. If you are interested in career opportunities, we would love to hear from you.
+            {page?.joinSection_body || "We are always looking for passionate and dedicated professionals to join our growing clinic. If you are interested in career opportunities, we would love to hear from you."}
           </p>
           <div className="mt-8 flex justify-center gap-4">
             <Button asChild size="lg" className="bg-[#2D8A8A] hover:bg-[#236b6b]">
-              <Link href="/contact">Contact Us</Link>
+              <Link href={page?.joinSection_ctaPrimary_url || "/contact"}>
+                {page?.joinSection_ctaPrimary_label || "Contact Us"}
+              </Link>
             </Button>
             <Button asChild variant="outline" size="lg">
-              <Link href="tel:+918244113388">Call Us</Link>
+              <Link href={page?.joinSection_ctaSecondary_url || "tel:+918244113388"}>
+                {page?.joinSection_ctaSecondary_label || "Call Us"}
+              </Link>
             </Button>
           </div>
         </div>

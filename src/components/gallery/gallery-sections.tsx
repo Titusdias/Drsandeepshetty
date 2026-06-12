@@ -221,10 +221,10 @@ export default function GallerySections({ sanityData }: { sanityData?: any[] }) 
           ];
           const accent = accents[idx % accents.length];
           
-          const images = section.images?.map((img: any) => ({
-            src: urlForImage(img).url(),
+          const images = section.images?.map((img: { src?: string; alt?: string }) => ({
+            src: img.src ?? "",
             alt: img.alt || section.title,
-          })) || [];
+          })).filter((img: { src: string }) => img.src) ?? [];
 
           return (
             <GallerySection

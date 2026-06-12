@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 
 import { client } from "@/sanity/lib/client";
 import { urlForImage } from "@/sanity/lib/image";
+import { servicesPageQuery, sanityFetchOptions } from "@/sanity/lib/queries";
 
 export const metadata: Metadata = {
   title: `Dental Services | ${CLINIC.name}`,
@@ -50,14 +51,11 @@ const groups = [
 ];
 
 export default async function ServicesPage() {
-  const query = `*[_type == "page" && slug.current == "services"][0]`;
-  const pageData = await client.fetch(query, {}, {
-    next: { tags: ["page"] }
-  });
+  const page = await client.fetch(servicesPageQuery, {}, sanityFetchOptions("services"));
 
-  const servicesSection = pageData?.pageBuilder?.find((block: any) => block._type === 'servicesSection');
-  const displayTitle = servicesSection?.title || "Total dental care, tailored for you";
-  const sanityServices = servicesSection?.services || [];
+  const displayTitle = page?.hero_heading || "Total dental care, tailored for you";
+  const sanityServices = page?.categories || [];
+  const serviceList = page?.directory_items?.length ? page.directory_items : SERVICE_LIST;
 
   return (
     <div>
@@ -65,16 +63,18 @@ export default async function ServicesPage() {
         <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
           <SectionReveal className="max-w-3xl">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#2D8A8A]">
-              Services
+              {page?.hero_sectionLabel || "Services"}
             </p>
             <h1 className="mt-3 text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl">
               {displayTitle}
             </h1>
             <p className="mt-5 text-lg text-slate-600">
-              Explore the treatments we routinely provide at our centre. 
-              </p>
+              {page?.hero_subheading || "Explore the treatments we routinely provide at our centre."}
+            </p>
             <Button asChild className="mt-8 rounded-xl">
-              <Link href="/contact">Book a consultation</Link>
+              <Link href={page?.hero_ctaUrl || "/contact"}>
+                {page?.hero_ctaLabel || "Book a consultation"}
+              </Link>
             </Button>
           </SectionReveal>
 
@@ -117,23 +117,33 @@ export default async function ServicesPage() {
                   <div className="inline-flex items-center gap-2 text-[#2D8A8A]">
                     <Stethoscope className="size-6" />
                     <span className="text-xs font-bold uppercase tracking-wide">
-                      Invisalign & orthodontics
+                      {page?.invisalign_subheading || "Invisalign & orthodontics"}
                     </span>
                   </div>
                   <h2 className="mt-3 text-xl font-bold text-slate-900">
-                    Aligners & braces under one roof
+                    {page?.invisalign_heading || "Aligners & braces under one roof"}
                   </h2>
                   <p className="mt-2 max-w-xl text-sm text-slate-600">
-                    Invisalign-certified workflows for teens and adults, plus options for fixed appliances when clinically preferred.
+                    {page?.invisalign_body || "Invisalign-certified workflows for teens and adults, plus options for fixed appliances when clinically preferred."}
                   </p>
                 </div>
-                <Image
-                  src="/smile-logo.png"
-                  alt=""
-                  width={64}
-                  height={64}
-                  className="hidden md:block"
-                />
+                {page?.invisalign_logo ? (
+                  <Image
+                    src={urlForImage(page.invisalign_logo).url()}
+                    alt="Invisalign"
+                    width={64}
+                    height={64}
+                    className="hidden md:block"
+                  />
+                ) : (
+                  <Image
+                    src="/smile-logo.png"
+                    alt=""
+                    width={64}
+                    height={64}
+                    className="hidden md:block"
+                  />
+                )}
               </div>
             </SectionReveal>
           </div>
@@ -143,16 +153,15 @@ export default async function ServicesPage() {
       <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
         <SectionReveal>
           <h2 className="text-2xl font-bold text-slate-950 sm:text-3xl">
-            Full service directory
+            {page?.directory_heading || "Full service directory"}
           </h2>
           <p className="mt-3 text-slate-600">
-            Everything listed reflects common services at our practice; inclusion
-            may vary based on diagnosis and clinician assessment.
+            {page?.directory_note || "Everything listed reflects common services at our practice; inclusion may vary based on diagnosis and clinician assessment."}
           </p>
         </SectionReveal>
 
         <ul className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {SERVICE_LIST.map((service, idx) => {
+          {serviceList.map((service: string, idx: number) => {
             const grp = groups.find((g) => g.match.some((m) => m === service));
             return (
               <SectionReveal

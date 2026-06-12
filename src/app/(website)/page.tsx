@@ -22,6 +22,7 @@ import { useClinicSettings, useTestimonials } from "@/lib/hooks";
 import { cn } from "@/lib/utils";
 import { client } from "@/sanity/lib/client";
 import { urlForImage } from "@/sanity/lib/image";
+import { homePageQuery } from "@/sanity/lib/queries";
 
 const herobhai =
   "https://images.unsplash.com/photo-1629909615184-74f495363b67?auto=format&fit=crop&w=1920&q=80";
@@ -97,17 +98,13 @@ function AnimatedStat({ value, label }: { value: number; label: string }) {
 export default function Home() {
   const { data: settings } = useClinicSettings();
   const { data: testimonials } = useTestimonials();
-  const [sanityHero, setSanityHero] = useState<any>(null);
+  const [homePage, setHomePage] = useState<Record<string, unknown> | null>(null);
 
   useEffect(() => {
     async function fetchSanityData() {
-      const query = `*[_type == "page" && slug.current == "home"][0]`;
       try {
-        const pageData = await client.fetch(query);
-        const heroSection = pageData?.pageBuilder?.find((block: any) => block._type === 'heroSection');
-        if (heroSection) {
-          setSanityHero(heroSection);
-        }
+        const data = await client.fetch(homePageQuery);
+        if (data) setHomePage(data);
       } catch (err) {
         console.error("Error fetching Sanity home page data", err);
       }
@@ -117,18 +114,27 @@ export default function Home() {
 
   // Fallback to hardcoded data if Firestore data isn't loaded yet
   const displaySettings = settings || CLINIC;
-  const displayTestimonials: ReviewItem[] = (testimonials || reviews)
-    .filter(t => t.featured)
-    .slice(0, 6)
-    .map(t => ({
-      name: t.name,
-      quote: t.quote,
-      featured: true,
-    }));
-
-  const heroTitle = sanityHero?.title || `Exceptional dental care in ${displaySettings.city}.`;
-  const heroSubtitle = sanityHero?.subtitle || displaySettings.tagline;
-  const heroBg = sanityHero?.backgroundImage ? urlForImage(sanityHero.backgroundImage).url() : herobhai;
+  const heroTitle = (homePage?.hero_heading as string) || `Exceptional dental care in ${displaySettings.city}.`;
+  const heroSubtitle = (homePage?.hero_subheading as string) || displaySettings.tagline;
+  const heroBg = homePage?.hero_backgroundImage
+    ? urlForImage(homePage.hero_backgroundImage).url()
+    : herobhai;
+  const heroInlineImage = homePage?.hero_inlineImage
+    ? urlForImage(homePage.hero_inlineImage).url()
+    : HERO_VISUAL;
+  const cmsReviews = (homePage?.reviews_items as Array<{ quote: string; reviewerLabel: string }> | undefined)?.map(
+    (item) => ({ name: item.reviewerLabel, quote: item.quote, featured: true })
+  );
+  const displayTestimonials: ReviewItem[] = cmsReviews?.length
+    ? cmsReviews
+    : (testimonials || reviews)
+        .filter(t => t.featured)
+        .slice(0, 6)
+        .map(t => ({
+          name: t.name,
+          quote: t.quote,
+          featured: true,
+        }));
 
   return (
     <>
@@ -153,11 +159,17 @@ export default function Home() {
           <SectionReveal className="space-y-7">
             <div className="flex flex-wrap gap-2">
               <Badge className="bg-white/90 text-slate-800 normal-case tracking-normal hover:bg-white/90">
-                {displaySettings.rating}★ Google · {displaySettings.reviewCount} reviews
+                {(homePage?.hero_badge as string) || `${displaySettings.rating}★ Google · ${displaySettings.reviewCount} reviews`}
               </Badge>
-              <Badge className="border border-white/60 bg-transparent text-white normal-case tracking-normal">
-                Certified Invisalign focus
-              </Badge>
+              {homePage?.hero_certBadge ? (
+                <Badge className="border border-white/60 bg-transparent text-white normal-case tracking-normal">
+                  {homePage.hero_certBadge as string}
+                </Badge>
+              ) : (
+                <Badge className="border border-white/60 bg-transparent text-white normal-case tracking-normal">
+                  Certified Invisalign focus
+                </Badge>
+              )}
             </div>
             <h1 className="text-[2rem] font-bold leading-[1.12] tracking-tight text-white sm:text-5xl lg:text-[3.15rem]">
               {heroTitle}
@@ -166,9 +178,8 @@ export default function Home() {
               {heroSubtitle}
             </p>
             <p className="max-w-xl text-base leading-relaxed text-white/85 sm:text-lg">
-              A modern, minimally stressful clinic experience—clear guidance,
-              advanced techniques, and meticulous hygiene for every age at{" "}
-              {displaySettings.name}.
+              {(homePage?.hero_description as string) ||
+                `A modern, minimally stressful clinic experience—clear guidance, advanced techniques, and meticulous hygiene for every age at ${displaySettings.name}.`}
             </p>
             <div className="grid gap-2.5 sm:flex sm:flex-wrap sm:gap-3">
               <Button
@@ -176,8 +187,8 @@ export default function Home() {
                 size="lg"
                 className="w-full rounded-full bg-[#2D8A8A] px-10 hover:bg-[#236f6f] sm:w-auto"
               >
-                <Link href={sanityHero?.ctaButton?.url || "/contact"}>
-                  {sanityHero?.ctaButton?.text || "Book your visit"}
+                <Link href={(homePage?.hero_ctaPrimary_url as string) || "/contact"}>
+                  {(homePage?.hero_ctaPrimary_label as string) || "Book your visit"}
                 </Link>
               </Button>
               <Button
@@ -192,7 +203,7 @@ export default function Home() {
                 </a>
               </Button>
             </div>
-            <p className="text-xs text-white/60">{displaySettings.hoursSummary}</p>
+            <p className="text-xs text-white/60">{(homePage?.hero_hoursNote as string) || displaySettings.hoursSummary}</p>
           </SectionReveal>
 
           {/* Floating image card — right side */}
@@ -208,7 +219,7 @@ export default function Home() {
               }}
             >
               <Image
-                src={HERO_VISUAL}
+                src={heroInlineImage}
                 alt="Advanced dental treatment suite"
                 width={1600}
                 height={1200}
