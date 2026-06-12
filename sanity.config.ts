@@ -2,7 +2,7 @@ import { defineConfig } from 'sanity'
 import { structureTool } from 'sanity/structure'
 import { visionTool } from '@sanity/vision'
 import { schema } from './src/sanity/schemaTypes'
-import { structure } from './src/sanity/structure'
+import { structure, singletonTypes } from './src/sanity/structure'
 
 export default defineConfig({
   basePath: '/studio',
@@ -11,4 +11,20 @@ export default defineConfig({
   title: "Dr. Sandeep Shetty — CMS",
   schema,
   plugins: [structureTool({ structure }), visionTool()],
+  document: {
+    newDocumentOptions: (prev, { creationContext }) => {
+      if (creationContext.type === 'global') {
+        return prev.filter(
+          (template) => !singletonTypes.has(template.templateId)
+        )
+      }
+      return prev
+    },
+    actions: (prev, { schemaType }) => {
+      if (singletonTypes.has(schemaType)) {
+        return prev.filter(({ action }) => action !== 'duplicate')
+      }
+      return prev
+    },
+  },
 })

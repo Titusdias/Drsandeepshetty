@@ -7,11 +7,6 @@ export default defineType({
   // Desk structure should use S.documentTypeListItem('siteSettings').id('siteSettings') for this singleton
   fields: [
     defineField({
-      name: '__experimental_actions',
-      type: 'string',
-      hidden: true,
-    }),
-    defineField({
       name: 'clinicName',
       title: 'Clinic Name',
       type: 'string',

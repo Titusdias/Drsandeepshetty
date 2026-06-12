@@ -7,11 +7,6 @@ export default defineType({
   // Desk structure should use S.documentTypeListItem('navigationMenu').id('navigationMenu') for this singleton
   fields: [
     defineField({
-      name: '__experimental_actions',
-      type: 'string',
-      hidden: true,
-    }),
-    defineField({
       name: 'items',
       title: 'Nav Items',
       type: 'array',

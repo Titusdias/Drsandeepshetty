@@ -16,11 +16,6 @@ export default defineType({
   ],
   fields: [
     defineField({
-      name: '__experimental_actions',
-      type: 'string',
-      hidden: true,
-    }),
-    defineField({
       name: 'hero_badge',
       title: 'Hero Badge',
       type: 'string',

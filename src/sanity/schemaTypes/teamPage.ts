@@ -12,11 +12,6 @@ export default defineType({
   ],
   fields: [
     defineField({
-      name: '__experimental_actions',
-      type: 'string',
-      hidden: true,
-    }),
-    defineField({
       name: 'hero_sectionLabel',
       title: 'Section Label',
       type: 'string',

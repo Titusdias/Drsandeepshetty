@@ -1,6 +1,6 @@
 import type { StructureResolver } from 'sanity/structure'
 
-const singletonTypes = new Set([
+export const singletonTypes = new Set([
   'siteSettings',
   'homePage',
   'aboutPage',
