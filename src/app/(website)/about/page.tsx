@@ -7,12 +7,27 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { CLINIC } from "@/lib/site-config";
 
+import { client } from "@/sanity/lib/client";
+
 export const metadata: Metadata = {
   title: `About Us | ${CLINIC.name}`,
   description: `Learn about ${CLINIC.name} in ${CLINIC.city}—multi-specialty care, Invisalign provider, hygiene-first protocols.`,
 };
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  // Fetch the page document where the aboutSection block lives
+  const query = `*[_type == "page" && slug.current == "about"][0]`;
+  const pageData = await client.fetch(query, {}, {
+    next: { tags: ["page"] }
+  });
+
+  // Extract the aboutSection from the pageBuilder array
+  const aboutSection = pageData?.pageBuilder?.find((block: any) => block._type === 'aboutSection');
+
+  // Fallbacks to existing text if Sanity data is not populated yet
+  const displayTitle = aboutSection?.title || `Welcome to ${CLINIC.shortName}'s practice`;
+  const displayDescription = aboutSection?.description || `Located on Bunts Hostel Road and Gateway Complex in Pandeshwar, we serve families across ${CLINIC.city} with a calm, tech-forward clinic experience—where comfort, cleanliness, and clear communication come first.`;
+
   return (
     <div>
       <section className="relative overflow-hidden border-b border-slate-200 bg-white">
@@ -23,12 +38,10 @@ export default function AboutPage() {
               About us
             </p>
             <h1 className="mt-3 text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl">
-              Welcome to {CLINIC.shortName}&apos;s practice
+              {displayTitle}
             </h1>
-            <p className="mt-6 text-lg leading-relaxed text-slate-600">
-              Located on Bunts Hostel Road and  Gateway Complex in Pandeshwar, we serve families across{" "}
-              {CLINIC.city} with a calm, tech-forward clinic experience—where
-              comfort, cleanliness, and clear communication come first.
+            <p className="mt-6 text-lg leading-relaxed text-slate-600 whitespace-pre-wrap">
+              {displayDescription}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild className="rounded-xl px-8">
