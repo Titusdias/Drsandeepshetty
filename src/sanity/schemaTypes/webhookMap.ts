@@ -14,6 +14,7 @@ export const webhookRevalidationMap: Record<string, string[]> = {
   teamMember: ['team', '/team'],
   teamPage: ['team', '/team'],
   galleryItem: ['gallery', '/gallery'],
+  gallerySection: ['gallery', '/gallery'],
   galleryPage: ['gallery', '/gallery'],
   contactPage: ['contact', '/contact'],
   navigationMenu: ['nav', '/'],
