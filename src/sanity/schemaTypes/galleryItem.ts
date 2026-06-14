@@ -33,10 +33,9 @@ export default defineType({
       description: 'Gallery filter category',
       options: {
         list: [
-          { title: 'Before & After', value: 'before-after' },
-          { title: 'Clinic', value: 'clinic' },
-          { title: 'Team', value: 'team' },
-          { title: 'Procedures', value: 'procedures' },
+          { title: 'Patient Testimonials', value: 'patient-testimonials' },
+          { title: 'Our Achievements', value: 'our-achievements' },
+          { title: 'Success Stories', value: 'success-stories' },
         ],
       },
     }),

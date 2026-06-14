@@ -3,7 +3,6 @@ import GallerySections from "@/components/gallery/gallery-sections";
 import { Metadata } from "next";
 
 import { client } from "@/sanity/lib/client";
-import { urlForImage } from "@/sanity/lib/image";
 import { galleryItemsQuery, galleryPageQuery, sanityFetchOptions } from "@/sanity/lib/queries";
 
 export const metadata: Metadata = {
@@ -11,43 +10,11 @@ export const metadata: Metadata = {
   description: `Explore our patient testimonials, achievements, and success stories at ${CLINIC.shortName}.`,
 };
 
-const categoryMeta: Record<string, { title: string; description?: string }> = {
-  "before-after": { title: "Before & After", description: "Real patient transformations." },
-  clinic: { title: "Our Clinic", description: "A look inside our practice." },
-  team: { title: "Our Team", description: "The people behind your smile." },
-  procedures: { title: "Procedures", description: "Treatments and clinical work." },
-};
-
-type GalleryItem = {
-  title?: string;
-  image?: Parameters<typeof urlForImage>[0];
-  altText?: string;
-  category?: string;
-};
-
 export default async function GalleryPage() {
-  const [page, items] = await Promise.all([
+  const [page, galleryItems] = await Promise.all([
     client.fetch(galleryPageQuery, {}, sanityFetchOptions("gallery")),
-    client.fetch(galleryItemsQuery, {}, sanityFetchOptions("gallery")) as Promise<GalleryItem[]>,
+    client.fetch(galleryItemsQuery, {}, sanityFetchOptions("gallery")),
   ]);
-
-  const byCategory: Record<string, GalleryItem[]> = {};
-  for (const item of items ?? []) {
-    const key = item.category || "clinic";
-    if (!byCategory[key]) byCategory[key] = [];
-    byCategory[key].push(item);
-  }
-
-  const grouped = Object.entries(byCategory).map(([category, categoryItems]) => ({
-    title: categoryMeta[category]?.title ?? category,
-    description: categoryMeta[category]?.description,
-    images: categoryItems
-      .filter((item) => item.image)
-      .map((item) => ({
-        src: urlForImage(item.image!).url(),
-        alt: item.altText || item.title || category,
-      })),
-  }));
 
   return (
     <main>
@@ -69,7 +36,7 @@ export default async function GalleryPage() {
         </div>
       </section>
 
-      <GallerySections sanityData={grouped.length > 0 ? grouped : undefined} />
+      <GallerySections sanityData={galleryItems} />
     </main>
   );
 }

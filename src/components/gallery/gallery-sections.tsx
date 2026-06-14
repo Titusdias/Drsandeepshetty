@@ -209,57 +209,84 @@ function GallerySection({
 }
 
 export default function GallerySections({ sanityData }: { sanityData?: any[] }) {
-  if (sanityData && sanityData.length > 0) {
-    return (
-      <>
-        {sanityData.map((section: any, idx: number) => {
-          const accents = [
-            "from-blue-500 to-blue-600",
-            "from-amber-500 to-amber-600",
-            "from-green-500 to-green-600",
-            "from-purple-500 to-purple-600",
-          ];
-          const accent = accents[idx % accents.length];
-          
-          const images = section.images?.map((img: { src?: string; alt?: string }) => ({
-            src: img.src ?? "",
-            alt: img.alt || section.title,
-          })).filter((img: { src: string }) => img.src) ?? [];
+  const baseSections = [
+    {
+      title: "Patient Testimonials",
+      accent: "from-blue-500 to-blue-600",
+      images: [...testimonialImages],
+      naturalSize: false,
+    },
+    {
+      title: "Our Achievements",
+      description: "Milestones and recognitions that showcase our commitment to excellence.",
+      accent: "from-amber-500 to-amber-600",
+      images: [...achievementImages],
+      naturalSize: true,
+    },
+    {
+      title: "Success Stories",
+      accent: "from-green-500 to-green-600",
+      images: [...successStories],
+      naturalSize: false,
+    }
+  ];
 
-          return (
-            <GallerySection
-              key={section._key || idx}
-              title={section.title}
-              accent={accent}
-              images={images}
-            />
-          );
-        })}
-      </>
-    );
+  const finalSections = [...baseSections];
+
+  const accents = [
+    "from-blue-500 to-blue-600",
+    "from-amber-500 to-amber-600",
+    "from-green-500 to-green-600",
+    "from-purple-500 to-purple-600",
+  ];
+
+  if (sanityData && sanityData.length > 0) {
+    sanityData.forEach((item: any, idx) => {
+      const imgUrl = item.image?.asset?.url;
+      if (!imgUrl) return;
+
+      const categoryValue = item.category || "Other";
+      const altText = item.altText || categoryValue;
+      const formattedImage = {
+        src: imgUrl,
+        alt: altText,
+      };
+
+      let targetSectionTitle = "Other";
+      if (categoryValue === "patient-testimonials") targetSectionTitle = "Patient Testimonials";
+      else if (categoryValue === "our-achievements") targetSectionTitle = "Our Achievements";
+      else if (categoryValue === "success-stories") targetSectionTitle = "Success Stories";
+      else targetSectionTitle = categoryValue;
+
+      const existingSectionIndex = finalSections.findIndex(
+        (s) => s.title.toLowerCase() === targetSectionTitle.toLowerCase()
+      );
+
+      if (existingSectionIndex >= 0) {
+        finalSections[existingSectionIndex].images.push(formattedImage);
+      } else {
+        finalSections.push({
+          title: targetSectionTitle,
+          accent: accents[finalSections.length % accents.length],
+          images: [formattedImage],
+          naturalSize: false,
+        });
+      }
+    });
   }
 
   return (
     <>
-      <GallerySection
-        title="Patient Testimonials"
-        accent="from-blue-500 to-blue-600"
-        images={testimonialImages}
-      />
-
-      <GallerySection
-        title="Our Achievements"
-        description="Milestones and recognitions that showcase our commitment to excellence."
-        accent="from-amber-500 to-amber-600"
-        images={achievementImages}
-        naturalSize={true}
-      />
-
-      <GallerySection
-        title="Success Stories"
-        accent="from-green-500 to-green-600"
-        images={successStories}
-      />
+      {finalSections.map((section, idx) => (
+        <GallerySection
+          key={section.title || idx}
+          title={section.title}
+          description={section.description}
+          accent={section.accent}
+          images={section.images}
+          naturalSize={section.naturalSize}
+        />
+      ))}
     </>
   );
 }

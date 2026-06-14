@@ -23,15 +23,18 @@ export default async function ContactPage() {
   ]);
 
   const displayTitle = page?.hero_heading || "Book your smile visit";
-  const mainBranch = branches?.[0];
-  const displayAddress = mainBranch?.address || CLINIC.addressLine;
   const displayMapEmbed = page?.mapEmbedUrl || CLINIC.mapEmbedSrc;
 
-  const phoneNumbers = [
+  // Extract all phone numbers dynamically from settings, all branches, and fallback
+  const allPhones = [
     settings?.phone,
-    mainBranch?.phone,
+    // Safely map through all branches to get their phone numbers if they exist
+    ...(branches?.map((b: any) => b.phone) || []),
     CLINIC.phoneDisplay2,
   ].filter(Boolean) as string[];
+  
+  // Remove duplicate phone numbers just in case
+  const phoneNumbers = Array.from(new Set(allPhones));
 
   return (
     <div className="relative overflow-hidden">
@@ -91,23 +94,48 @@ export default async function ContactPage() {
                   <h2 className="text-xl font-bold text-slate-900">
                     Clinic information
                   </h2>
-                  <div className="flex flex-col gap-5">
-                    <div className="flex gap-3">
-                      <MapPin className="mt-0.5 size-5 shrink-0 text-[#2D8A8A]" />
-                      <div>
-                        <p className="font-semibold text-slate-900">Main Clinic</p>
-                        <p className="mt-1 text-slate-600 whitespace-pre-wrap">{displayAddress}</p>
-                        <a
-                          href={CLINIC.googleMapsUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mt-2 inline-block text-sm font-semibold text-[#2D8A8A] hover:underline"
-                        >
-                          Open in Google Maps
-                        </a>
+                  
+                  {/* DYNAMIC BRANCHES MAPPING STARTS HERE */}
+                  <div className="flex flex-col gap-6">
+                    {branches && branches.length > 0 ? (
+                      branches.map((branch: any, idx: number) => (
+                        <div key={branch._id || idx} className="flex gap-3 border-b border-slate-100 pb-4 last:border-0 last:pb-0">
+                          <MapPin className="mt-0.5 size-5 shrink-0 text-[#2D8A8A]" />
+                          <div>
+                            <p className="font-semibold text-slate-900">{branch.name || "Clinic Branch"}</p>
+                            <p className="mt-1 text-slate-600 whitespace-pre-wrap">{branch.address || CLINIC.addressLine}</p>
+                            <a
+                              href={branch.googleMapsUrl || CLINIC.googleMapsUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="mt-2 inline-block text-sm font-semibold text-[#2D8A8A] hover:underline"
+                            >
+                              Open in Google Maps
+                            </a>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      // Fallback just in case Sanity returns an empty array
+                      <div className="flex gap-3">
+                        <MapPin className="mt-0.5 size-5 shrink-0 text-[#2D8A8A]" />
+                        <div>
+                          <p className="font-semibold text-slate-900">Main Clinic</p>
+                          <p className="mt-1 text-slate-600 whitespace-pre-wrap">{CLINIC.addressLine}</p>
+                          <a
+                            href={CLINIC.googleMapsUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-2 inline-block text-sm font-semibold text-[#2D8A8A] hover:underline"
+                          >
+                            Open in Google Maps
+                          </a>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
+                  {/* DYNAMIC BRANCHES MAPPING ENDS HERE */}
+
                   <div className="border-t border-slate-100 pt-5">
                     <p className="text-sm font-semibold text-slate-900">
                       Hours

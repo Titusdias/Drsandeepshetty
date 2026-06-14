@@ -42,15 +42,21 @@ export default async function TeamPage() {
 
   const displayTitle = page?.hero_heading || "People who put your smile first";
 
-  const team = members?.length
-    ? members.map((member: { name: string; role?: string; bio?: string; photo?: unknown; slug?: string }) => ({
-        name: member.name,
-        role: member.role,
-        bio: member.bio || "",
-        image: member.photo ? urlForImage(member.photo).url() : "/Screenshot 2026-06-03 213443.png",
-        slug: member.slug || null,
-      }))
-    : defaultTeam;
+  const sanityTeam = members?.map((member: { name: string; role?: string; bio?: string; photo?: unknown; slug?: string }) => ({
+    name: member.name,
+    role: member.role,
+    bio: member.bio || "",
+    image: member.photo ? urlForImage(member.photo).url() : "/Screenshot 2026-06-03 213443.png",
+    slug: member.slug || null,
+  })) || [];
+
+  const team = [...defaultTeam];
+  
+  sanityTeam.forEach((member: any) => {
+    if (!team.some((m) => m.name === member.name)) {
+      team.push(member);
+    }
+  });
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20">

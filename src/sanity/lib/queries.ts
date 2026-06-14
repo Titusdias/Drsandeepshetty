@@ -123,7 +123,7 @@ export const teamPageQuery = `*[_type == "teamPage"][0]{
   seo
 }`
 
-export const teamMembersQuery = `*[_type == "teamMember" && isActive != false] | order(order asc) {
+export const teamMembersQuery = `*[_type == "teamMember"] | order(_createdAt asc) {
   name,
   "slug": slug.current,
   role,
@@ -140,15 +140,16 @@ export const galleryPageQuery = `*[_type == "galleryPage"][0]{
   seo
 }`
 
-export const galleryItemsQuery = `*[_type == "galleryItem" && isActive != false] | order(order asc) {
+export const gallerySectionsQuery = `*[_type == "gallerySection"]{
   title,
-  image {
-    asset->,
-    hotspot,
-    crop
-  },
-  altText,
-  category
+  images[]{
+    alt,
+    asset->{ url }
+  }
+}`
+
+export const galleryItemsQuery = `*[_type == "galleryItem" && isActive == true] | order(order asc) {
+  _id, altText, category, image { asset->{ url } }
 }`
 
 export const contactPageQuery = `*[_type == "contactPage"][0]{

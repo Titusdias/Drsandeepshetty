@@ -3,7 +3,7 @@ import { defineField, defineType, defineArrayMember } from 'sanity'
 export const gallerySection = defineType({
   name: 'gallerySection',
   title: 'Gallery Section',
-  type: 'object',
+  type: 'document',
   fields: [
     defineField({
       name: 'title',

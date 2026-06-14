@@ -14,6 +14,7 @@ import galleryPage from './galleryPage'
 import contactPage from './contactPage'
 import navigationMenu from './navigationMenu'
 import seoDefaults from './seoDefaults'
+import { gallerySection } from './gallerySection'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -31,5 +32,6 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     contactPage,
     navigationMenu,
     seoDefaults,
+    gallerySection,
   ],
 }
