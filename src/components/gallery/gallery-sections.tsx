@@ -208,7 +208,13 @@ function GallerySection({
   );
 }
 
-export default function GallerySections({ sanityData }: { sanityData?: any[] }) {
+export default function GallerySections({ 
+  galleryItems, 
+  gallerySections 
+}: { 
+  galleryItems?: any[];
+  gallerySections?: any[];
+}) {
   const baseSections = [
     {
       title: "Patient Testimonials",
@@ -240,8 +246,32 @@ export default function GallerySections({ sanityData }: { sanityData?: any[] }) 
     "from-purple-500 to-purple-600",
   ];
 
-  if (sanityData && sanityData.length > 0) {
-    sanityData.forEach((item: any, idx) => {
+  if (gallerySections && gallerySections.length > 0) {
+    gallerySections.forEach((sanitySection: any, idx: number) => {
+      const sanityImages = sanitySection.images?.map((img: any) => ({
+        src: img.asset?.url || img.src || "",
+        alt: img.alt || sanitySection.title,
+      })).filter((img: any) => img.src) || [];
+
+      const existingSectionIndex = finalSections.findIndex(
+        (s) => s.title.toLowerCase() === sanitySection.title?.toLowerCase()
+      );
+
+      if (existingSectionIndex >= 0) {
+        finalSections[existingSectionIndex].images.push(...sanityImages);
+      } else {
+        finalSections.push({
+          title: sanitySection.title || `Gallery Section ${idx + 1}`,
+          accent: accents[finalSections.length % accents.length],
+          images: sanityImages,
+          naturalSize: false,
+        });
+      }
+    });
+  }
+
+  if (galleryItems && galleryItems.length > 0) {
+    galleryItems.forEach((item: any, idx: number) => {
       const imgUrl = item.image?.asset?.url;
       if (!imgUrl) return;
 
@@ -256,6 +286,7 @@ export default function GallerySections({ sanityData }: { sanityData?: any[] }) 
       if (categoryValue === "patient-testimonials") targetSectionTitle = "Patient Testimonials";
       else if (categoryValue === "our-achievements") targetSectionTitle = "Our Achievements";
       else if (categoryValue === "success-stories") targetSectionTitle = "Success Stories";
+      else if (categoryValue === "publications") targetSectionTitle = "Publications";
       else targetSectionTitle = categoryValue;
 
       const existingSectionIndex = finalSections.findIndex(

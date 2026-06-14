@@ -3,7 +3,7 @@ import GallerySections from "@/components/gallery/gallery-sections";
 import { Metadata } from "next";
 
 import { client } from "@/sanity/lib/client";
-import { galleryItemsQuery, galleryPageQuery, sanityFetchOptions } from "@/sanity/lib/queries";
+import { galleryItemsQuery, galleryPageQuery, gallerySectionsQuery, sanityFetchOptions } from "@/sanity/lib/queries";
 
 export const metadata: Metadata = {
   title: `Clinic Gallery - ${CLINIC.shortName}`,
@@ -11,9 +11,10 @@ export const metadata: Metadata = {
 };
 
 export default async function GalleryPage() {
-  const [page, galleryItems] = await Promise.all([
+  const [page, galleryItems, gallerySections] = await Promise.all([
     client.fetch(galleryPageQuery, {}, sanityFetchOptions("gallery")),
     client.fetch(galleryItemsQuery, {}, sanityFetchOptions("gallery")),
+    client.fetch(gallerySectionsQuery, {}, sanityFetchOptions("gallery")),
   ]);
 
   return (
@@ -36,7 +37,7 @@ export default async function GalleryPage() {
         </div>
       </section>
 
-      <GallerySections sanityData={galleryItems} />
+      <GallerySections galleryItems={galleryItems} gallerySections={gallerySections} />
     </main>
   );
 }

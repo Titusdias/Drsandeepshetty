@@ -36,6 +36,7 @@ export default defineType({
           { title: 'Patient Testimonials', value: 'patient-testimonials' },
           { title: 'Our Achievements', value: 'our-achievements' },
           { title: 'Success Stories', value: 'success-stories' },
+          { title: 'Publications', value: 'publications' },
         ],
       },
     }),
